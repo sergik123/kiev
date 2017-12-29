@@ -9049,7 +9049,6 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     comboBox13.DroppedDown = true;
                     comboBox13.Focus();
                 }
-
             }
             if (e.KeyCode == Keys.Left)
             {
@@ -9456,36 +9455,110 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
         {
             if(button17.Text=="Перейти к редагуванню")
             {
-                foreach (var item in tb)
+                if (listBox3.SelectedIndex != -1)
                 {
-                    item.Enabled = true;
+                    foreach (var item in tb)
+                    {
+                        item.Enabled = true;
 
+                    }
+                    foreach (var item in tb_date)
+                    {
+                        item.Enabled = true;
+
+                    }
+
+                    button1.Visible = true;
+                    flag_edit = true;
+                    panel5.Visible = false;
                 }
-                foreach (var item in tb_date)
+                else
                 {
-                    item.Enabled = true;
-
+                    return;
                 }
-
-                button1.Visible = true;
-                flag_edit = true;
+                   
             }
             if(button17.Text== "Переглянути картку")
             {
-                button16.Visible = false;
-                foreach (var item in tb)
+                if (listBox3.SelectedIndex != -1)
                 {
-                    item.Enabled= false;
+                    button16.Visible = false;
+                    foreach (var item in tb)
+                    {
+                        item.Enabled = false;
 
+                    }
+                    foreach (var item in tb_date)
+                    {
+                        item.Enabled = false;
+
+                    }
+                    panel5.Visible = false;
                 }
-                foreach (var item in tb_date)
+                else
                 {
-                    item.Enabled = false;
-
+                    return;
                 }
+                   
             }
+            if (button17.Text == "Видалити картку")
+            {
+                
+                try
+                {
+                    if (listBox3.SelectedIndex!=-1)
+                    {
+                        string res = listBox3.SelectedItem.ToString();
+                        string[] rep;
+                        rep = res.Split(' ');
+                        rep = rep[2].Split('(');
+
+                        DialogResult res_del = MessageBox.Show("Ви впевнені що хочете видалити цю картку", "Увага!", MessageBoxButtons.YesNo);
+                        if (res_del == DialogResult.Yes)
+                        {
+                            cmd_db = new SQLiteCommand("DELETE from kartka_obliku WHERE `id_kartki`=" + rep[1], con_db);
+                            rdr = cmd_db.ExecuteReader();
+                            MessageBox.Show("Картка видалена з бази даних");
+                            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku", con_db);
+                            rdr = cmd_db.ExecuteReader();
+                            listBox3.Items.Clear();
+
+                            while (rdr.Read())
+                            {
+                                // region_items.Add(rdr[1].ToString());
+                                listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                            }
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        DialogResult res_del = MessageBox.Show("Ви впевнені що хочете видалити всі картки", "Увага!", MessageBoxButtons.YesNo);
+                        if (res_del == DialogResult.Yes)
+                        {
+                            cmd_db = new SQLiteCommand("DELETE from kartka_obliku", con_db);
+                            rdr = cmd_db.ExecuteReader();
+                            MessageBox.Show("Всі картки видалені з бази даних");
+                            listBox3.Items.Clear();
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    Console.WriteLine(ex.Message);
+                }
+               
+            }
+
             
-            panel5.Visible = false;
             foreach (var item in tb)
             {
                 if (item.Name != "textBox69")
@@ -10143,6 +10216,22 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 maskedTextBox10.Text = "";
             }
             //maskedTextBox10.Text = dateTimePicker7.Value.ToShortTimeString();
+        }
+
+        private void видаленняКартокToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            panel5.Visible = true;
+            button16.Visible = true;
+            button17.Text = "Видалити картку";
+            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku", con_db);
+            rdr = cmd_db.ExecuteReader();
+            listBox3.Items.Clear();
+
+            while (rdr.Read())
+            {
+                // region_items.Add(rdr[1].ToString());
+                listBox3.Items.Add("номер картки " +"("+rdr[3].ToString()+" ) "+ rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+            }
         }
     }
 }

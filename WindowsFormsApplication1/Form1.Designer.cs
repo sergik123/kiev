@@ -453,6 +453,7 @@
             this.button17 = new System.Windows.Forms.Button();
             this.button16 = new System.Windows.Forms.Button();
             this.listBox3 = new System.Windows.Forms.ListBox();
+            this.видаленняКартокToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -1281,10 +1282,10 @@
             // 
             this.dateTimePicker3.CustomFormat = "HH:mm";
             this.dateTimePicker3.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker3.Location = new System.Drawing.Point(205, 44);
+            this.dateTimePicker3.Location = new System.Drawing.Point(214, 44);
             this.dateTimePicker3.Name = "dateTimePicker3";
             this.dateTimePicker3.ShowUpDown = true;
-            this.dateTimePicker3.Size = new System.Drawing.Size(60, 20);
+            this.dateTimePicker3.Size = new System.Drawing.Size(16, 20);
             this.dateTimePicker3.TabIndex = 88;
             this.dateTimePicker3.TabStop = false;
             this.dateTimePicker3.Value = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
@@ -2443,7 +2444,8 @@
             this.створитиPogStatToolStripMenuItem,
             this.створитиФорму701ToolStripMenuItem,
             this.редагуванняToolStripMenuItem,
-            this.переглядКартокToolStripMenuItem});
+            this.переглядКартокToolStripMenuItem,
+            this.видаленняКартокToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1168, 24);
@@ -5324,6 +5326,13 @@
             this.listBox3.Size = new System.Drawing.Size(350, 684);
             this.listBox3.TabIndex = 0;
             // 
+            // видаленняКартокToolStripMenuItem
+            // 
+            this.видаленняКартокToolStripMenuItem.Name = "видаленняКартокToolStripMenuItem";
+            this.видаленняКартокToolStripMenuItem.Size = new System.Drawing.Size(118, 20);
+            this.видаленняКартокToolStripMenuItem.Text = "Видалення карток";
+            this.видаленняКартокToolStripMenuItem.Click += new System.EventHandler(this.видаленняКартокToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5810,6 +5819,7 @@
         private System.Windows.Forms.MaskedTextBox maskedTextBox8;
         private System.Windows.Forms.MaskedTextBox maskedTextBox9;
         private System.Windows.Forms.MaskedTextBox maskedTextBox10;
+        private System.Windows.Forms.ToolStripMenuItem видаленняКартокToolStripMenuItem;
     }
 }
 
