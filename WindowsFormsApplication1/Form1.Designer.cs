@@ -210,6 +210,7 @@
             this.створитиФорму701ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.редагуванняToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.переглядКартокToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.видаленняКартокToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label102 = new System.Windows.Forms.Label();
             this.label36 = new System.Windows.Forms.Label();
@@ -450,10 +451,42 @@
             this.button13 = new System.Windows.Forms.Button();
             this.button12 = new System.Windows.Forms.Button();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.button19 = new System.Windows.Forms.Button();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.textBox166 = new System.Windows.Forms.TextBox();
+            this.label123 = new System.Windows.Forms.Label();
+            this.label122 = new System.Windows.Forms.Label();
+            this.button18 = new System.Windows.Forms.Button();
+            this.label121 = new System.Windows.Forms.Label();
+            this.textBox163 = new System.Windows.Forms.TextBox();
+            this.textBox164 = new System.Windows.Forms.TextBox();
+            this.textBox165 = new System.Windows.Forms.TextBox();
+            this.label118 = new System.Windows.Forms.Label();
+            this.label119 = new System.Windows.Forms.Label();
+            this.label120 = new System.Windows.Forms.Label();
+            this.label117 = new System.Windows.Forms.Label();
+            this.label116 = new System.Windows.Forms.Label();
+            this.textBox162 = new System.Windows.Forms.TextBox();
+            this.textBox161 = new System.Windows.Forms.TextBox();
+            this.textBox160 = new System.Windows.Forms.TextBox();
+            this.label113 = new System.Windows.Forms.Label();
+            this.label114 = new System.Windows.Forms.Label();
+            this.label115 = new System.Windows.Forms.Label();
+            this.maskedTextBox13 = new System.Windows.Forms.MaskedTextBox();
+            this.label112 = new System.Windows.Forms.Label();
+            this.maskedTextBox12 = new System.Windows.Forms.MaskedTextBox();
+            this.label111 = new System.Windows.Forms.Label();
+            this.maskedTextBox11 = new System.Windows.Forms.MaskedTextBox();
+            this.label110 = new System.Windows.Forms.Label();
+            this.label109 = new System.Windows.Forms.Label();
+            this.label108 = new System.Windows.Forms.Label();
+            this.label107 = new System.Windows.Forms.Label();
             this.button17 = new System.Windows.Forms.Button();
             this.button16 = new System.Windows.Forms.Button();
             this.listBox3 = new System.Windows.Forms.ListBox();
-            this.видаленняКартокToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.panel6 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -470,6 +503,7 @@
             this.panel4.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -2430,7 +2464,7 @@
             this.textBox69.Name = "textBox69";
             this.textBox69.ReadOnly = true;
             this.textBox69.Size = new System.Drawing.Size(21, 20);
-            this.textBox69.TabIndex = 160;
+            this.textBox69.TabIndex = 1;
             this.textBox69.TabStop = false;
             this.textBox69.TextChanged += new System.EventHandler(this.textBox69_TextChanged);
             this.textBox69.Enter += new System.EventHandler(this.textBox69_Enter);
@@ -2464,6 +2498,7 @@
             // 
             // создатьToolStripMenuItem
             // 
+            this.создатьToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("создатьToolStripMenuItem.Image")));
             this.создатьToolStripMenuItem.Name = "создатьToolStripMenuItem";
             this.создатьToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.создатьToolStripMenuItem.Text = "Створити";
@@ -2471,6 +2506,7 @@
             // 
             // открітьToolStripMenuItem
             // 
+            this.открітьToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("открітьToolStripMenuItem.Image")));
             this.открітьToolStripMenuItem.Name = "открітьToolStripMenuItem";
             this.открітьToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.открітьToolStripMenuItem.Text = "Імпорт картки";
@@ -2478,6 +2514,7 @@
             // 
             // вийтиToolStripMenuItem
             // 
+            this.вийтиToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("вийтиToolStripMenuItem.Image")));
             this.вийтиToolStripMenuItem.Name = "вийтиToolStripMenuItem";
             this.вийтиToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.вийтиToolStripMenuItem.Text = "Вийти";
@@ -2493,6 +2530,7 @@
             // 
             // кодРегіонуToolStripMenuItem
             // 
+            this.кодРегіонуToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("кодРегіонуToolStripMenuItem.Image")));
             this.кодРегіонуToolStripMenuItem.Name = "кодРегіонуToolStripMenuItem";
             this.кодРегіонуToolStripMenuItem.Size = new System.Drawing.Size(304, 22);
             this.кодРегіонуToolStripMenuItem.Text = "Код регіону, районів та населених пунктів";
@@ -2525,6 +2563,13 @@
             this.переглядКартокToolStripMenuItem.Size = new System.Drawing.Size(111, 20);
             this.переглядКартокToolStripMenuItem.Text = "Перегляд карток";
             this.переглядКартокToolStripMenuItem.Click += new System.EventHandler(this.переглядКартокToolStripMenuItem_Click);
+            // 
+            // видаленняКартокToolStripMenuItem
+            // 
+            this.видаленняКартокToolStripMenuItem.Name = "видаленняКартокToolStripMenuItem";
+            this.видаленняКартокToolStripMenuItem.Size = new System.Drawing.Size(118, 20);
+            this.видаленняКартокToolStripMenuItem.Text = "Видалення карток";
+            this.видаленняКартокToolStripMenuItem.Click += new System.EventHandler(this.видаленняКартокToolStripMenuItem_Click);
             // 
             // groupBox2
             // 
@@ -5287,6 +5332,37 @@
             // 
             // panel5
             // 
+            this.panel5.Controls.Add(this.button19);
+            this.panel5.Controls.Add(this.radioButton2);
+            this.panel5.Controls.Add(this.radioButton1);
+            this.panel5.Controls.Add(this.textBox166);
+            this.panel5.Controls.Add(this.label123);
+            this.panel5.Controls.Add(this.label122);
+            this.panel5.Controls.Add(this.button18);
+            this.panel5.Controls.Add(this.label121);
+            this.panel5.Controls.Add(this.textBox163);
+            this.panel5.Controls.Add(this.textBox164);
+            this.panel5.Controls.Add(this.textBox165);
+            this.panel5.Controls.Add(this.label118);
+            this.panel5.Controls.Add(this.label119);
+            this.panel5.Controls.Add(this.label120);
+            this.panel5.Controls.Add(this.label117);
+            this.panel5.Controls.Add(this.label116);
+            this.panel5.Controls.Add(this.textBox162);
+            this.panel5.Controls.Add(this.textBox161);
+            this.panel5.Controls.Add(this.textBox160);
+            this.panel5.Controls.Add(this.label113);
+            this.panel5.Controls.Add(this.label114);
+            this.panel5.Controls.Add(this.label115);
+            this.panel5.Controls.Add(this.maskedTextBox13);
+            this.panel5.Controls.Add(this.label112);
+            this.panel5.Controls.Add(this.maskedTextBox12);
+            this.panel5.Controls.Add(this.label111);
+            this.panel5.Controls.Add(this.maskedTextBox11);
+            this.panel5.Controls.Add(this.label110);
+            this.panel5.Controls.Add(this.label109);
+            this.panel5.Controls.Add(this.label108);
+            this.panel5.Controls.Add(this.label107);
             this.panel5.Controls.Add(this.button17);
             this.panel5.Controls.Add(this.button16);
             this.panel5.Controls.Add(this.listBox3);
@@ -5297,9 +5373,307 @@
             this.panel5.TabIndex = 8;
             this.panel5.Visible = false;
             // 
+            // button19
+            // 
+            this.button19.Location = new System.Drawing.Point(688, 450);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(152, 23);
+            this.button19.TabIndex = 37;
+            this.button19.Text = "видалити всі фільтри";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.button19_Click);
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.radioButton2.Location = new System.Drawing.Point(499, 398);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(83, 17);
+            this.radioButton2.TabIndex = 36;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "додаткові";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.radioButton1.Location = new System.Drawing.Point(417, 398);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(70, 17);
+            this.radioButton1.TabIndex = 35;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "основні";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
+            // textBox166
+            // 
+            this.textBox166.Location = new System.Drawing.Point(579, 359);
+            this.textBox166.Name = "textBox166";
+            this.textBox166.Size = new System.Drawing.Size(62, 20);
+            this.textBox166.TabIndex = 33;
+            this.textBox166.TextChanged += new System.EventHandler(this.textBox166_TextChanged);
+            // 
+            // label123
+            // 
+            this.label123.AutoSize = true;
+            this.label123.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label123.Location = new System.Drawing.Point(414, 360);
+            this.label123.Name = "label123";
+            this.label123.Size = new System.Drawing.Size(143, 16);
+            this.label123.TabIndex = 32;
+            this.label123.Text = "по номеру района";
+            // 
+            // label122
+            // 
+            this.label122.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label122.AutoSize = true;
+            this.label122.Location = new System.Drawing.Point(355, 332);
+            this.label122.Name = "label122";
+            this.label122.Size = new System.Drawing.Size(775, 13);
+            this.label122.TabIndex = 31;
+            this.label122.Text = resources.GetString("label122.Text");
+            // 
+            // button18
+            // 
+            this.button18.Location = new System.Drawing.Point(412, 449);
+            this.button18.Name = "button18";
+            this.button18.Size = new System.Drawing.Size(222, 23);
+            this.button18.TabIndex = 30;
+            this.button18.Text = "Пошук";
+            this.button18.UseVisualStyleBackColor = true;
+            this.button18.Click += new System.EventHandler(this.button18_Click);
+            // 
+            // label121
+            // 
+            this.label121.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label121.AutoSize = true;
+            this.label121.Location = new System.Drawing.Point(355, 64);
+            this.label121.Name = "label121";
+            this.label121.Size = new System.Drawing.Size(775, 13);
+            this.label121.TabIndex = 29;
+            this.label121.Text = resources.GetString("label121.Text");
+            // 
+            // textBox163
+            // 
+            this.textBox163.Location = new System.Drawing.Point(648, 297);
+            this.textBox163.Name = "textBox163";
+            this.textBox163.Size = new System.Drawing.Size(60, 20);
+            this.textBox163.TabIndex = 28;
+            // 
+            // textBox164
+            // 
+            this.textBox164.Location = new System.Drawing.Point(524, 297);
+            this.textBox164.Name = "textBox164";
+            this.textBox164.Size = new System.Drawing.Size(60, 20);
+            this.textBox164.TabIndex = 27;
+            // 
+            // textBox165
+            // 
+            this.textBox165.Location = new System.Drawing.Point(646, 260);
+            this.textBox165.Name = "textBox165";
+            this.textBox165.Size = new System.Drawing.Size(62, 20);
+            this.textBox165.TabIndex = 26;
+            // 
+            // label118
+            // 
+            this.label118.AutoSize = true;
+            this.label118.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label118.Location = new System.Drawing.Point(601, 298);
+            this.label118.Name = "label118";
+            this.label118.Size = new System.Drawing.Size(26, 16);
+            this.label118.TabIndex = 25;
+            this.label118.Text = "до";
+            // 
+            // label119
+            // 
+            this.label119.AutoSize = true;
+            this.label119.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label119.Location = new System.Drawing.Point(415, 298);
+            this.label119.Name = "label119";
+            this.label119.Size = new System.Drawing.Size(100, 16);
+            this.label119.TabIndex = 24;
+            this.label119.Text = "інтервал від";
+            // 
+            // label120
+            // 
+            this.label120.AutoSize = true;
+            this.label120.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label120.Location = new System.Drawing.Point(412, 261);
+            this.label120.Name = "label120";
+            this.label120.Size = new System.Drawing.Size(227, 16);
+            this.label120.TabIndex = 23;
+            this.label120.Text = "по номеру додаткової картки";
+            // 
+            // label117
+            // 
+            this.label117.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label117.AutoSize = true;
+            this.label117.Location = new System.Drawing.Point(356, 233);
+            this.label117.Name = "label117";
+            this.label117.Size = new System.Drawing.Size(775, 13);
+            this.label117.TabIndex = 22;
+            this.label117.Text = resources.GetString("label117.Text");
+            // 
+            // label116
+            // 
+            this.label116.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label116.AutoSize = true;
+            this.label116.Location = new System.Drawing.Point(356, 149);
+            this.label116.Name = "label116";
+            this.label116.Size = new System.Drawing.Size(775, 13);
+            this.label116.TabIndex = 21;
+            this.label116.Text = resources.GetString("label116.Text");
+            // 
+            // textBox162
+            // 
+            this.textBox162.Location = new System.Drawing.Point(632, 203);
+            this.textBox162.Name = "textBox162";
+            this.textBox162.Size = new System.Drawing.Size(60, 20);
+            this.textBox162.TabIndex = 20;
+            // 
+            // textBox161
+            // 
+            this.textBox161.Location = new System.Drawing.Point(526, 203);
+            this.textBox161.Name = "textBox161";
+            this.textBox161.Size = new System.Drawing.Size(60, 20);
+            this.textBox161.TabIndex = 19;
+            // 
+            // textBox160
+            // 
+            this.textBox160.Location = new System.Drawing.Point(630, 166);
+            this.textBox160.Name = "textBox160";
+            this.textBox160.Size = new System.Drawing.Size(62, 20);
+            this.textBox160.TabIndex = 18;
+            // 
+            // label113
+            // 
+            this.label113.AutoSize = true;
+            this.label113.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label113.Location = new System.Drawing.Point(595, 205);
+            this.label113.Name = "label113";
+            this.label113.Size = new System.Drawing.Size(26, 16);
+            this.label113.TabIndex = 16;
+            this.label113.Text = "до";
+            // 
+            // label114
+            // 
+            this.label114.AutoSize = true;
+            this.label114.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label114.Location = new System.Drawing.Point(417, 204);
+            this.label114.Name = "label114";
+            this.label114.Size = new System.Drawing.Size(100, 16);
+            this.label114.TabIndex = 14;
+            this.label114.Text = "інтервал від";
+            // 
+            // label115
+            // 
+            this.label115.AutoSize = true;
+            this.label115.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label115.Location = new System.Drawing.Point(414, 167);
+            this.label115.Name = "label115";
+            this.label115.Size = new System.Drawing.Size(210, 16);
+            this.label115.TabIndex = 12;
+            this.label115.Text = "по номеру основної картки";
+            // 
+            // maskedTextBox13
+            // 
+            this.maskedTextBox13.Location = new System.Drawing.Point(645, 121);
+            this.maskedTextBox13.Mask = "00/00/0000";
+            this.maskedTextBox13.Name = "maskedTextBox13";
+            this.maskedTextBox13.Size = new System.Drawing.Size(70, 20);
+            this.maskedTextBox13.TabIndex = 11;
+            this.maskedTextBox13.ValidatingType = typeof(System.DateTime);
+            // 
+            // label112
+            // 
+            this.label112.AutoSize = true;
+            this.label112.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label112.Location = new System.Drawing.Point(615, 123);
+            this.label112.Name = "label112";
+            this.label112.Size = new System.Drawing.Size(26, 16);
+            this.label112.TabIndex = 10;
+            this.label112.Text = "до";
+            // 
+            // maskedTextBox12
+            // 
+            this.maskedTextBox12.Location = new System.Drawing.Point(534, 121);
+            this.maskedTextBox12.Mask = "00/00/0000";
+            this.maskedTextBox12.Name = "maskedTextBox12";
+            this.maskedTextBox12.Size = new System.Drawing.Size(70, 20);
+            this.maskedTextBox12.TabIndex = 9;
+            this.maskedTextBox12.ValidatingType = typeof(System.DateTime);
+            // 
+            // label111
+            // 
+            this.label111.AutoSize = true;
+            this.label111.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label111.Location = new System.Drawing.Point(415, 123);
+            this.label111.Name = "label111";
+            this.label111.Size = new System.Drawing.Size(100, 16);
+            this.label111.TabIndex = 8;
+            this.label111.Text = "інтервал від";
+            // 
+            // maskedTextBox11
+            // 
+            this.maskedTextBox11.Location = new System.Drawing.Point(534, 85);
+            this.maskedTextBox11.Mask = "00/00/0000";
+            this.maskedTextBox11.Name = "maskedTextBox11";
+            this.maskedTextBox11.Size = new System.Drawing.Size(71, 20);
+            this.maskedTextBox11.TabIndex = 7;
+            this.maskedTextBox11.ValidatingType = typeof(System.DateTime);
+            // 
+            // label110
+            // 
+            this.label110.AutoSize = true;
+            this.label110.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label110.Location = new System.Drawing.Point(412, 86);
+            this.label110.Name = "label110";
+            this.label110.Size = new System.Drawing.Size(115, 16);
+            this.label110.TabIndex = 6;
+            this.label110.Text = "по даті пожежі";
+            // 
+            // label109
+            // 
+            this.label109.AutoSize = true;
+            this.label109.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label109.ForeColor = System.Drawing.Color.Maroon;
+            this.label109.Location = new System.Drawing.Point(409, 41);
+            this.label109.Name = "label109";
+            this.label109.Size = new System.Drawing.Size(160, 17);
+            this.label109.TabIndex = 5;
+            this.label109.Text = "Фільтри для пошуку";
+            // 
+            // label108
+            // 
+            this.label108.AutoSize = true;
+            this.label108.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label108.Location = new System.Drawing.Point(236, 663);
+            this.label108.Name = "label108";
+            this.label108.Size = new System.Drawing.Size(0, 13);
+            this.label108.TabIndex = 4;
+            // 
+            // label107
+            // 
+            this.label107.AutoSize = true;
+            this.label107.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label107.ForeColor = System.Drawing.Color.Maroon;
+            this.label107.Location = new System.Drawing.Point(4, 660);
+            this.label107.Name = "label107";
+            this.label107.Size = new System.Drawing.Size(222, 16);
+            this.label107.TabIndex = 3;
+            this.label107.Text = "Кількість знайдених записів:";
+            // 
             // button17
             // 
-            this.button17.Location = new System.Drawing.Point(573, 236);
+            this.button17.Location = new System.Drawing.Point(511, 574);
             this.button17.Name = "button17";
             this.button17.Size = new System.Drawing.Size(275, 66);
             this.button17.TabIndex = 2;
@@ -5319,19 +5693,27 @@
             // 
             // listBox3
             // 
-            this.listBox3.Dock = System.Windows.Forms.DockStyle.Left;
             this.listBox3.FormattingEnabled = true;
             this.listBox3.Location = new System.Drawing.Point(0, 0);
             this.listBox3.Name = "listBox3";
-            this.listBox3.Size = new System.Drawing.Size(350, 684);
+            this.listBox3.Size = new System.Drawing.Size(350, 641);
             this.listBox3.TabIndex = 0;
             // 
-            // видаленняКартокToolStripMenuItem
+            // progressBar1
             // 
-            this.видаленняКартокToolStripMenuItem.Name = "видаленняКартокToolStripMenuItem";
-            this.видаленняКартокToolStripMenuItem.Size = new System.Drawing.Size(118, 20);
-            this.видаленняКартокToolStripMenuItem.Text = "Видалення карток";
-            this.видаленняКартокToolStripMenuItem.Click += new System.EventHandler(this.видаленняКартокToolStripMenuItem_Click);
+            this.progressBar1.Location = new System.Drawing.Point(235, 225);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(265, 23);
+            this.progressBar1.TabIndex = 194;
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.progressBar1);
+            this.panel6.Location = new System.Drawing.Point(417, 21);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(643, 343);
+            this.panel6.TabIndex = 195;
+            this.panel6.Visible = false;
             // 
             // Form1
             // 
@@ -5339,6 +5721,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(1168, 730);
+            this.Controls.Add(this.panel6);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
@@ -5353,8 +5736,8 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.button1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
+            this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Програма для створення картки обліку пожежі";
@@ -5390,6 +5773,8 @@
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
             this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
+            this.panel6.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -5820,6 +6205,39 @@
         private System.Windows.Forms.MaskedTextBox maskedTextBox9;
         private System.Windows.Forms.MaskedTextBox maskedTextBox10;
         private System.Windows.Forms.ToolStripMenuItem видаленняКартокToolStripMenuItem;
+        private System.Windows.Forms.Label label108;
+        private System.Windows.Forms.Label label107;
+        private System.Windows.Forms.Label label116;
+        private System.Windows.Forms.TextBox textBox162;
+        private System.Windows.Forms.TextBox textBox161;
+        private System.Windows.Forms.TextBox textBox160;
+        private System.Windows.Forms.Label label113;
+        private System.Windows.Forms.Label label114;
+        private System.Windows.Forms.Label label115;
+        private System.Windows.Forms.MaskedTextBox maskedTextBox13;
+        private System.Windows.Forms.Label label112;
+        private System.Windows.Forms.MaskedTextBox maskedTextBox12;
+        private System.Windows.Forms.Label label111;
+        private System.Windows.Forms.MaskedTextBox maskedTextBox11;
+        private System.Windows.Forms.Label label110;
+        private System.Windows.Forms.Label label109;
+        private System.Windows.Forms.Button button18;
+        private System.Windows.Forms.Label label121;
+        private System.Windows.Forms.TextBox textBox163;
+        private System.Windows.Forms.TextBox textBox164;
+        private System.Windows.Forms.TextBox textBox165;
+        private System.Windows.Forms.Label label118;
+        private System.Windows.Forms.Label label119;
+        private System.Windows.Forms.Label label120;
+        private System.Windows.Forms.Label label117;
+        private System.Windows.Forms.TextBox textBox166;
+        private System.Windows.Forms.Label label123;
+        private System.Windows.Forms.Label label122;
+        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.Button button19;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 
