@@ -34,6 +34,7 @@ List<string> region_items = new List<string>();
         List<ComboBox> tb_combo = new List<ComboBox>();
         bool flag_edit = false;
         string error_log="";
+        bool flag_state = false;
         public Form1()
         {
             try
@@ -181,8 +182,6 @@ List<string> region_items = new List<string>();
 
  private void button1_Click(object sender, EventArgs e)
  {
-            panel6.Visible = true;
-            progressBar1.Value += 1;
            string error = "Заповніть наступні поля: ";
             //  try
             //  {
@@ -292,8 +291,8 @@ List<string> region_items = new List<string>();
 
             if (validateField(textbox))
             {
-                
 
+                flag_state = true;
                 object filename = Environment.CurrentDirectory + "/MyDataBase/Proekt_kartky.docx";
                 object filename2 = Environment.CurrentDirectory + "/export/Proekt_kartky("+textBox2.Text+","+textBox3.Text+ ").docx";
                 var doc = new Word.Application();
@@ -536,7 +535,7 @@ List<string> region_items = new List<string>();
                 ReplaceWord("{n17}", micse, worddoc);
             if (textBox80.Text!="")
             {
-                virib = textBox80.Text;
+                    virib = textBox80.Text;
                     // CodeFromBase("virib_iniciator", "code_virib", "item_virib", "{virib}", virib, worddoc);
                     ReplaceWord("{n18}", textBox80.Text, worddoc);
                     ReplaceWord("{virib}", textBox157.Text, worddoc);
@@ -545,7 +544,7 @@ List<string> region_items = new List<string>();
                 }
             else
             {
-                ReplaceWord("{n18}", " ", worddoc);
+                    ReplaceWord("{n18}", " ", worddoc);
 
                     ReplaceWord("{virib}", " ", worddoc);
                     dict.Add("code_virib", "");
@@ -554,7 +553,7 @@ List<string> region_items = new List<string>();
                 ReplaceWord("{n18}", virib, worddoc);
             if (textBox81.Text!="")
             {
-                pricina = textBox81.Text;
+                    pricina = textBox81.Text;
                     // CodeFromBase("pricini_fire", "code_pricini", "name_pricini", "{pricina}", pricina, worddoc);
                     ReplaceWord("{n19}", textBox81.Text, worddoc);
                     ReplaceWord("{pricina}", textBox158.Text, worddoc);
@@ -2164,6 +2163,7 @@ List<string> region_items = new List<string>();
                   //  }
               //  }
                //myStream.Close();  
+              
                 worddoc.Close();
                 panel6.Visible = false;
             MessageBox.Show("Картка обліку пожежі створена");
@@ -2254,9 +2254,13 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
         range.Find.ClearFormatting();
         
         range.Find.Execute(FindText: stubToReplace, ReplaceWith: text);
-            
-      
-           
+
+            if (flag_state)
+            {
+                panel6.Visible = true;
+                if(progressBar1.Value<400)
+                progressBar1.Value += 1;
+            }
     }
         public void ReadDb() {
           //  connection();
@@ -9153,11 +9157,10 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 e.SuppressKeyPress = true;
                 SendKeys.Send("{TAB}");
             }
+          
 
             if (e.KeyCode == Keys.F1)
-            {
-                //current = 0;
-                
+            {  
                 foreach (var item in tb)
                 { 
                     if (item.Focused)
@@ -9185,27 +9188,6 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                             item.Focus();
                         }
                 }
-                /* foreach (var item in tb_date)
-                 {
-                    // if(item.Name== "dateTimePicker3" || item.Name == "dateTimePicker4" || item.Name == "dateTimePicker5" || item.Name == "dateTimePicker7")
-                    // {
-                         if (item.Focused)
-                         {
-                             current = item.TabIndex;
-                         }
-                    // }
-
-                 }
-                 foreach (var item in tb_date)
-                 {
-                    // if (item.Name == "dateTimePicker3" || item.Name == "dateTimePicker4" || item.Name == "dateTimePicker5" || item.Name == "dateTimePicker7")
-                    // {
-                         if (item.TabIndex == current - 1)
-                         {
-                             item.Focus();
-                         }
-                   //  }
-                 }*/
               
                 foreach (var item in tb_masked)
                 {
@@ -9223,7 +9205,6 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                         item.Focus();
                     }
                 }
-              //  Console.WriteLine(current.ToString());
             }
         }
         public void GetTable(string name, KeyEventArgs e)

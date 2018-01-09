@@ -487,6 +487,7 @@
             this.listBox3 = new System.Windows.Forms.ListBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.label124 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -5701,19 +5702,37 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(235, 225);
+            this.progressBar1.Location = new System.Drawing.Point(77, 92);
+            this.progressBar1.Maximum = 400;
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(265, 23);
+            this.progressBar1.Size = new System.Drawing.Size(471, 23);
             this.progressBar1.TabIndex = 194;
             // 
             // panel6
             // 
+            this.panel6.AllowDrop = true;
+            this.panel6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.panel6.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel6.BackgroundImage")));
+            this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel6.Controls.Add(this.label124);
             this.panel6.Controls.Add(this.progressBar1);
-            this.panel6.Location = new System.Drawing.Point(417, 21);
+            this.panel6.Location = new System.Drawing.Point(283, 250);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(643, 343);
+            this.panel6.Size = new System.Drawing.Size(643, 155);
             this.panel6.TabIndex = 195;
             this.panel6.Visible = false;
+            // 
+            // label124
+            // 
+            this.label124.AutoSize = true;
+            this.label124.BackColor = System.Drawing.Color.Transparent;
+            this.label124.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label124.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.label124.Location = new System.Drawing.Point(152, 36);
+            this.label124.Name = "label124";
+            this.label124.Size = new System.Drawing.Size(321, 24);
+            this.label124.TabIndex = 195;
+            this.label124.Text = "Зачекайте, дані обробляються!";
             // 
             // Form1
             // 
@@ -5775,6 +5794,7 @@
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -6238,6 +6258,7 @@
         private System.Windows.Forms.Button button19;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label label124;
     }
 }
 
