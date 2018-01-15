@@ -161,6 +161,7 @@
     <Content Include="DSNS_emblem_2016.svg.ico" />
     <Content Include="DSNS_emblem_2017.ico" />
     <Content Include="DSNS_emblem_2017.svg.ico" />
+    <None Include="Resources\903831_354137421361791_1829832539_o.jpg" />
     <None Include="Resources\KGgpZStc.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

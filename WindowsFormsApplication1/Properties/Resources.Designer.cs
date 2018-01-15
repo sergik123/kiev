@@ -63,6 +63,16 @@ namespace WindowsFormsApplication1.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _903831_354137421361791_1829832539_o {
+            get {
+                object obj = ResourceManager.GetObject("903831_354137421361791_1829832539_o", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap KGgpZStc {
             get {
                 object obj = ResourceManager.GetObject("KGgpZStc", resourceCulture);

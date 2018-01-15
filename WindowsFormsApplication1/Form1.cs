@@ -35,6 +35,9 @@ List<string> region_items = new List<string>();
         bool flag_edit = false;
         string error_log="";
         bool flag_state = false;
+        private bool flag_form=false;
+        private int[] select_color;
+        int count_i = 0;
         public Form1()
         {
             try
@@ -195,7 +198,7 @@ List<string> region_items = new List<string>();
            
            /* ComboBox[] combo = { comboBox1, comboBox2, comboBox3, comboBox5, comboBox6, comboBox7, comboBox9, comboBox10, comboBox11, comboBox12, comboBox24,
                 comboBox35, comboBox36, comboBox45, comboBox46,comboBox57,comboBox66,comboBox67,comboBox72,comboBox78,comboBox79,comboBox80,comboBox81};*/
-            TextBox[] textbox = { textBox69, textBox1, textBox70, textBox2, textBox71, textBox4, textBox72, textBox79, textBox80, textBox81, textBox9,textBox102,textBox150};
+            TextBox[] textbox = { textBox69, textBox1, textBox70, textBox2, textBox71,textBox76, textBox4, textBox72, textBox79, textBox80, textBox81, textBox9,textBox102,textBox150};
 
             if (dateTimePicker1.Value.ToString() == "01.01.1900 0:00:00")
             {
@@ -214,11 +217,7 @@ List<string> region_items = new List<string>();
                     MessageBox.Show("Заповніть дату ліквідації пожежі");
                     return;
                 }
-               
-               
             }
-           
-           
             if (textBox102.Text == "1")
             {
                 if (dateTimePicker3.Value.ToShortTimeString() == "0:00")
@@ -278,6 +277,7 @@ List<string> region_items = new List<string>();
                 MessageBox.Show("Дата виникнення пожежі не може бути меньшою ніж дата останної перевірки");
                 return;
             }
+           
             if (dateTimePicker9.Value > dateTimePicker10.Value)
             {
                 MessageBox.Show("Дата останної перевірки не може бути більшою ніж дата заповнення картки");
@@ -291,8 +291,9 @@ List<string> region_items = new List<string>();
 
             if (validateField(textbox))
             {
-
+                panel6.Visible = true;
                 flag_state = true;
+                button1.Enabled = false;
                 object filename = Environment.CurrentDirectory + "/MyDataBase/Proekt_kartky.docx";
                 object filename2 = Environment.CurrentDirectory + "/export/Proekt_kartky("+textBox2.Text+","+textBox3.Text+ ").docx";
                 var doc = new Word.Application();
@@ -2168,10 +2169,61 @@ List<string> region_items = new List<string>();
                 panel6.Visible = false;
             MessageBox.Show("Картка обліку пожежі створена");
 
-               
+                progressBar1.Value = 0;
+
                 SaveInDb save = new SaveInDb(dict,flag_edit);
                 dict.Clear();
+             
                 flag_edit = false;
+
+                foreach (var item in tb)
+                {
+                    if (item.Name != "textBox69")
+                    {
+                        item.Clear();
+                        item.Enabled = true;
+                    }
+                    else
+                    {
+                        item.Select();
+                    }
+                    if (item.Name == "textBox3")
+                    {
+                        item.Text = "0";
+                    }
+
+
+                }
+                foreach (var item in tb_date)
+                {
+                    if (item.Name != "dateTimePicker9")
+                    {
+                        item.Enabled = true;
+                    }
+
+                    if (item.Name == "dateTimePicker10")
+                    {
+                        item.Value = DateTime.Today;
+                    }
+                    else
+                    {
+                        item.Value = DateTime.Parse("01.01.1900");
+                    }
+
+                }
+                foreach (var item in tb_masked)
+                {
+                    if (item.Name != maskedTextBox6.Name)
+                    {
+                        item.Text = "";
+                    }
+                }
+                foreach (var item in tb_combo)
+                {
+                    //item.SelectionLength = 0;
+                    item.Text = "";
+                }
+                button1.Enabled = true;
             }
             else
             {
@@ -2216,8 +2268,11 @@ List<string> region_items = new List<string>();
 
                 Console.WriteLine(ex.Message);
             }
-         //   Disconnect();
-            dict.Add(namefield, text.ToString());
+            //   Disconnect();
+            
+                dict.Add(namefield, text.ToString());
+           
+            
         }
 public string CodeAllContent(string tableitem, string namefield, string code,  object text)
         {
@@ -2257,7 +2312,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
             if (flag_state)
             {
-                panel6.Visible = true;
+                
                 if(progressBar1.Value<400)
                 progressBar1.Value += 1;
             }
@@ -2287,10 +2342,11 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox2.Items.Add((rdr[1].ToString()));
+                        comboBox2.Items.Add(rdr[0].ToString() + ";" + rdr[1].ToString());
                     }
                     /*таблица 3 район*/
                     comboBox83.Items.Clear();
+                    comboBox1.Items.Clear();
                     listBox1.Items.Clear();
                     cmd_db = new SQLiteCommand("SELECT * from current_raion", con_db);
                     rdr = cmd_db.ExecuteReader();
@@ -2299,8 +2355,9 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     {
                         // region_items.Add(rdr[1].ToString());
                        
-                        comboBox83.Items.Add((rdr[2].ToString()));
+                        comboBox83.Items.Add(rdr[1].ToString() + ";" + rdr[2].ToString());
                         listBox1.Items.Add(rdr[1].ToString()+";"+rdr[2].ToString());
+                        comboBox1.Items.Add(rdr[1].ToString() + ";" + rdr[2].ToString());
                     }
                     /*таблица 3-1 коди населенных пунктов*/
                     comboBox85.Items.Clear();
@@ -2311,7 +2368,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox85.Items.Add((rdr[2].ToString()));
+                        comboBox85.Items.Add(rdr[1].ToString() + ";" + rdr[2].ToString());
                         listBox2.Items.Add(rdr[1].ToString() + ";" + rdr[2].ToString());
                     }
 
@@ -2322,7 +2379,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox5.Items.Add((rdr[1].ToString()));
+                        comboBox5.Items.Add(rdr[0].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 5 Ступінь ризику господарської діяльності*/
@@ -2332,7 +2389,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox6.Items.Add((rdr[1].ToString()));
+                        comboBox6.Items.Add(rdr[2].ToString()+";"+rdr[1].ToString());
                     }
 
                     /*таблица 6 Підконтрольність об’єкта*/
@@ -2342,7 +2399,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox7.Items.Add((rdr[1].ToString()));
+                        comboBox7.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 7 Поверховість*/
@@ -2352,7 +2409,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox8.Items.Add((rdr[1].ToString()));
+                        comboBox8.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 8 Ступінь вогнестійкості будинку*/
@@ -2362,7 +2419,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox9.Items.Add((rdr[1].ToString()));
+                        comboBox9.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 9 Категорія небезпеки*/
@@ -2372,7 +2429,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox10.Items.Add((rdr[1].ToString()));
+                        comboBox10.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 10 Місце виникнення пожежі*/
@@ -2425,11 +2482,11 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox25.Items.Add((rdr[1].ToString()));
-                        comboBox26.Items.Add((rdr[1].ToString()));
-                        comboBox27.Items.Add((rdr[1].ToString()));
-                        comboBox28.Items.Add((rdr[1].ToString()));
-                        comboBox29.Items.Add((rdr[1].ToString()));
+                        comboBox25.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox26.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox27.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox28.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox29.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 16 Умови, що вплинули на загибель людей*/
@@ -2443,11 +2500,11 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox30.Items.Add((rdr[1].ToString()));
-                        comboBox31.Items.Add((rdr[1].ToString()));
-                        comboBox32.Items.Add((rdr[1].ToString()));
-                        comboBox33.Items.Add((rdr[1].ToString()));
-                        comboBox34.Items.Add((rdr[1].ToString()));
+                        comboBox30.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox31.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox32.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox33.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox34.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 17 Інформація про ліквідацію пожежі*/
@@ -2458,8 +2515,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox35.Items.Add((rdr[1].ToString()));
-                       
+                        comboBox35.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 18 Умови, що вплинули на поширення пожежі*/
@@ -2473,11 +2529,11 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox36.Items.Add((rdr[1].ToString()));
-                        comboBox37.Items.Add((rdr[1].ToString()));
-                        comboBox38.Items.Add((rdr[1].ToString()));
-                        comboBox39.Items.Add((rdr[1].ToString()));
-                        comboBox40.Items.Add((rdr[1].ToString()));
+                        comboBox36.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox37.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox38.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox39.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox40.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
 
                     }
 
@@ -2492,11 +2548,11 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox41.Items.Add((rdr[1].ToString()));
-                        comboBox42.Items.Add((rdr[1].ToString()));
-                        comboBox43.Items.Add((rdr[1].ToString()));
-                        comboBox44.Items.Add((rdr[1].ToString()));
-                        comboBox45.Items.Add((rdr[1].ToString()));
+                        comboBox41.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox42.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox43.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox44.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox45.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
 
                     }
 
@@ -2508,31 +2564,31 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox46.Items.Add((rdr[1].ToString()));
+                        comboBox46.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 21 Системи протипожежного захисту*/
-                    cmd_db = new SQLiteCommand("SELECT * from system_protipojeji", con_db);
-                    rdr = cmd_db.ExecuteReader();
-                    comboBox47.Items.Clear();
+                  //  cmd_db = new SQLiteCommand("SELECT * from system_protipojeji", con_db);
+                  //  rdr = cmd_db.ExecuteReader();
+                   /* comboBox47.Items.Clear();
                     comboBox48.Items.Clear();
                     comboBox49.Items.Clear();
                     comboBox50.Items.Clear();
-                    comboBox51.Items.Clear();
-                    while (rdr.Read())
+                    comboBox51.Items.Clear();*/
+                   /* while (rdr.Read())
                     {
-                        // region_items.Add(rdr[1].ToString());
+                       // region_items.Add(rdr[1].ToString());
                         comboBox47.Items.Add((rdr[1].ToString()));
                         comboBox48.Items.Add((rdr[1].ToString()));
                         comboBox49.Items.Add((rdr[1].ToString()));
                         comboBox50.Items.Add((rdr[1].ToString()));
                         comboBox51.Items.Add((rdr[1].ToString()));
-                    }
+                    }*/
 
                     /*таблица 22 Результат дії системи протипожежного захисту*/
-                    cmd_db = new SQLiteCommand("SELECT * from resultat_dii_system", con_db);
-                    rdr = cmd_db.ExecuteReader();
-                    comboBox52.Items.Clear();
+                  //  cmd_db = new SQLiteCommand("SELECT * from resultat_dii_system", con_db);
+                  //  rdr = cmd_db.ExecuteReader();
+                   /* comboBox52.Items.Clear();
                     comboBox53.Items.Clear();
                     comboBox54.Items.Clear();
                     comboBox55.Items.Clear();
@@ -2545,7 +2601,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                         comboBox54.Items.Add((rdr[1].ToString()));
                         comboBox55.Items.Add((rdr[1].ToString()));
                         comboBox56.Items.Add((rdr[1].ToString()));
-                    }
+                    }*/
 
                     /*таблица 23 Перелік кодів учасників гасіння пожежі*/
                     cmd_db = new SQLiteCommand("SELECT * from uchasnik_fire", con_db);
@@ -2558,11 +2614,11 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox57.Items.Add((rdr[1].ToString()));
-                        comboBox58.Items.Add((rdr[1].ToString()));
-                        comboBox59.Items.Add((rdr[1].ToString()));
-                        comboBox60.Items.Add((rdr[1].ToString()));
-                        comboBox61.Items.Add((rdr[1].ToString()));
+                        comboBox57.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox58.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox59.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox60.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox61.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 24 Перелік кодів пожежних автомобілів*/
@@ -2576,11 +2632,11 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox62.Items.Add((rdr[1].ToString()));
-                        comboBox63.Items.Add((rdr[1].ToString()));
-                        comboBox64.Items.Add((rdr[1].ToString()));
-                        comboBox65.Items.Add((rdr[1].ToString()));
-                        comboBox66.Items.Add((rdr[1].ToString()));
+                        comboBox62.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox63.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox64.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox65.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox66.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
                     }
 
                     /*таблица 25. Перелік кодів пожежних стволів*/
@@ -2593,9 +2649,9 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox67.Items.Add((rdr[1].ToString()));
-                        comboBox68.Items.Add((rdr[1].ToString()));
-                        comboBox69.Items.Add((rdr[1].ToString()));
+                        comboBox67.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox68.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox69.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
               
                     }
 
@@ -2609,9 +2665,9 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox70.Items.Add((rdr[1].ToString()));
-                        comboBox71.Items.Add((rdr[1].ToString()));
-                        comboBox72.Items.Add((rdr[1].ToString()));
+                        comboBox70.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox71.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox72.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
 
                     }
 
@@ -2625,9 +2681,9 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox73.Items.Add((rdr[1].ToString()));
-                        comboBox74.Items.Add((rdr[1].ToString()));
-                        comboBox75.Items.Add((rdr[1].ToString()));
+                        comboBox73.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox74.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox75.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
 
                     }
 
@@ -2641,9 +2697,9 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     while (rdr.Read())
                     {
                         // region_items.Add(rdr[1].ToString());
-                        comboBox76.Items.Add((rdr[1].ToString()));
-                        comboBox77.Items.Add((rdr[1].ToString()));
-                        comboBox78.Items.Add((rdr[1].ToString()));
+                        comboBox76.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox77.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
+                        comboBox78.Items.Add(rdr[2].ToString() + ";" + rdr[1].ToString());
 
                     }
 
@@ -2735,7 +2791,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             textBox73.Text = "";
             //    connection();
             /*таблица 3 об'єкт пожежі*/
-            string[] current_fire_item = comboBox3.SelectedItem.ToString().Split(')');
+            string[] current_fire_item = comboBox3.SelectedItem.ToString().Split(']');
             cmd_db = new SQLiteCommand("SELECT * from fire_objects WHERE `fire_name`=" + "\'" + current_fire_item[1] + "\'", con_db);
             rdr = cmd_db.ExecuteReader();
             comboBox4.Items.Clear();
@@ -2743,6 +2799,10 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             {
                 // region_items.Add(rdr[1].ToString());
                 comboBox4.Items.Add((rdr[3].ToString()+";"+rdr[2].ToString()));
+            }
+            if (comboBox3.SelectedText != null)
+            {
+                comboBox4.DroppedDown = true;
             }
             // comboBox4.SelectedIndex = 0;
            
@@ -2757,7 +2817,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             /*таблица 11 Виріб-ініціатор пожежі*/
             try
             {
-                string[] current_fire_item = comboBox12.SelectedItem.ToString().Split(')');
+                string[] current_fire_item = comboBox12.SelectedItem.ToString().Split(']');
                 cmd_db = new SQLiteCommand("SELECT * from virib_iniciator WHERE `name_virib`=" + "\'" + current_fire_item[1] + "\'", con_db);
                 rdr = cmd_db.ExecuteReader();
                 comboBox13.Items.Clear();
@@ -2765,6 +2825,10 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 {
                     // region_items.Add(rdr[1].ToString());
                     comboBox13.Items.Add((rdr[3].ToString() + ";" + rdr[2].ToString()));
+                }
+                if (comboBox12.SelectedText != null)
+                {
+                    comboBox13.DroppedDown = true;
                 }
             }
             catch (Exception ex)
@@ -2779,8 +2843,9 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void comboBox46_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox113.Text = CodeAllContent("nayavnist_spz", "name_spz", "code_spz", comboBox46.SelectedItem);
-            if (comboBox46.SelectedIndex == 0)
+            string[] str = comboBox46.SelectedItem.ToString().Split(';');
+            textBox113.Text = CodeAllContent("nayavnist_spz", "name_spz", "code_spz", str[1]);
+            if (comboBox46.SelectedIndex == 0 || comboBox46.SelectedIndex == 2)
             {
                 panel1.Visible = true;
                 //panel2.Visible = true;
@@ -2848,8 +2913,6 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             {
                 //item.SelectionLength = 0;
                 item.Text = "";
-
-
             }
         }
 
@@ -3199,6 +3262,10 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 textBox63.ForeColor = Color.Black;
                 textBox64.ForeColor = Color.Black;
             }
+            if (textBox62.Text != "" && textBox62.Text!="1")
+            {
+                textBox62.Text = "";
+            }
         }
 
         private void textBox63_TextChanged(object sender, EventArgs e)
@@ -3337,6 +3404,42 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     val = false;
                 }
             }*/
+            if (textBox48.Text != "")
+            {
+               if(textBox37.Text=="" && textBox34.Text == "" && textBox39.Text == "" && textBox38.Text == "" && textBox41.Text == "" && textBox40.Text == "" && textBox44.Text == "" &&
+                    textBox46.Text == "" && textBox45.Text == "" && textBox43.Text == "" && textBox42.Text == "" && textBox47.Text == " ")
+                {
+                    textBox48.BackColor = Color.Firebrick;
+                    textBox48.ForeColor = Color.White;
+                    val = false;
+                }
+
+            }
+            else
+            {
+                if (textBox37.Text == "" && textBox34.Text == "" && textBox39.Text == "" && textBox38.Text == "" && textBox41.Text == "" && textBox40.Text == "" && textBox44.Text == "" &&
+                      textBox46.Text == "" && textBox45.Text == "" && textBox43.Text == "" && textBox42.Text == "" && textBox47.Text == " ")
+                {
+                    textBox48.BackColor = Color.White;
+                    textBox48.ForeColor = Color.Black;
+                }
+            }
+            if (textBox37.Text != "" || textBox34.Text != "" || textBox39.Text != "" || textBox38.Text != "" || textBox41.Text != "" || textBox40.Text != "" || textBox44.Text != "" ||
+                    textBox46.Text != "" || textBox45.Text != "" || textBox43.Text != "" || textBox42.Text != "" || textBox47.Text != " ")
+            {
+                if (textBox48.Text == "")
+                {
+                    textBox48.BackColor = Color.Firebrick;
+                    textBox48.ForeColor = Color.White;
+                    val = false;
+                }
+                else
+                {
+                    textBox48.BackColor = Color.White;
+                    textBox48.ForeColor = Color.Black;
+                }
+               
+            }
             if (textBox9.Text == "")
             {
                 textBox9.BackColor = Color.Firebrick;
@@ -3408,10 +3511,15 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             
             if(dateTimePicker9.Value.ToString()!= "01.01.1900 0:00:00")
             {
-                if (textBox146.Text == "")
+                if (textBox146.Text == "" && textBox3.Text=="0")
                 {
                     val = false;
                     textBox146.BackColor = Color.Firebrick;
+                }
+                if (textBox147.Text == "" && textBox3.Text == "0")
+                {
+                    val = false;
+                    textBox147.BackColor = Color.Firebrick;
                 }
             }
             if (textBox147.Text != "")
@@ -3624,7 +3732,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             
             bool val_13 = int.TryParse(textBox72.Text, out int res13);
-                if(res13>=1 && res13<210)
+                if((res13>=1 && res13<210)|| (res13 >= 1501 && res13 < 1520))
                 {
               
                 if (textBox78.Text == "")
@@ -3666,11 +3774,15 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             bool val_cur10 = int.TryParse(textBox76.Text, out int res10);
             if(res10==11 || res10==12 || res10 == 13)
             {
-                if (textBox146.Text == "")
+                if (textBox146.Text == "" && textBox3.Text=="0")
                 {
                     val = false;
                     textBox146.BackColor = Color.Firebrick;
-
+                }
+                if (textBox147.Text == "" && textBox3.Text == "0")
+                {
+                    val = false;
+                    textBox147.BackColor = Color.Firebrick;
                 }
             }
             
@@ -3750,7 +3862,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     textBox3.ForeColor = Color.White;
                     val = false;
                 }
-                if (textBox102.Text == "")
+                if (textBox102.Text == "" && int.Parse(textBox3.Text)>0)
                 {
                     dict.Add("code_fire_likvid", "");
                     dict.Add("name_fire_likvid", "");
@@ -4189,12 +4301,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
                     if (textBox20.Text != "" || textBox83.Text != "" || textBox88.Text != "" || textBox93.Text != "" || textBox98.Text != "")
                     {
-                        if (textBox20.Text == "")
-                        {
-                            textBox20.BackColor = Color.Firebrick;
-                            textBox20.ForeColor = Color.White;
-                            val = false;
-                        }
+                       
                         if (textBox83.Text == "")
                         {
                             textBox83.BackColor = Color.Firebrick;
@@ -4239,12 +4346,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     }
                     if (textBox22.Text != "" || textBox84.Text != "" || textBox89.Text != "" || textBox94.Text != "" || textBox99.Text != "")
                     {
-                        if (textBox22.Text == "")
-                        {
-                            textBox22.BackColor = Color.Firebrick;
-                            textBox22.ForeColor = Color.White;
-                            val = false;
-                        }
+                        
                         if (textBox84.Text == "")
                         {
                             textBox84.BackColor = Color.Firebrick;
@@ -4289,12 +4391,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     }
                     if (textBox24.Text != "" || textBox85.Text != "" || textBox90.Text != "" || textBox95.Text != "" || textBox100.Text != "")
                     {
-                        if (textBox24.Text == "")
-                        {
-                            textBox24.BackColor = Color.Firebrick;
-                            textBox24.ForeColor = Color.White;
-                            val = false;
-                        }
+                        
                         if (textBox85.Text == "")
                         {
                             textBox85.BackColor = Color.Firebrick;
@@ -4340,12 +4437,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     }
                     if (textBox26.Text != "" || textBox86.Text != "" || textBox91.Text != "" || textBox96.Text != "" || textBox101.Text != "")
                     {
-                        if (textBox26.Text == "")
-                        {
-                            textBox26.BackColor = Color.Firebrick;
-                            textBox26.ForeColor = Color.White;
-                            val = false;
-                        }
+                        
                         if (textBox86.Text == "")
                         {
                             textBox86.BackColor = Color.Firebrick;
@@ -4370,12 +4462,12 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                             textBox101.ForeColor = Color.White;
                             val = false;
                         }
-
                     }
                     else
                     {
                         if (textBox26.Text == "" && textBox86.Text == "" && textBox91.Text == "" && textBox96.Text == "" && textBox101.Text == "")
                         {
+                            
                             textBox26.BackColor = Color.White;
                             textBox26.ForeColor = Color.Black;
                             textBox86.BackColor = Color.White;
@@ -4386,7 +4478,6 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                             textBox96.ForeColor = Color.Black;
                             textBox101.BackColor = Color.White;
                             textBox101.ForeColor = Color.Black;
-
                         }
                     }
                 }
@@ -4537,7 +4628,18 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 textBox68.BackColor = Color.White;
                 textBox68.ForeColor = Color.Black;
             }
-            textBox68.Text = CodeAllContent("poverhovist", "name_poverh", "code_poverh", comboBox8.SelectedItem);
+
+            try
+            {
+                string[] str = comboBox8.SelectedItem.ToString().Split(';');
+                textBox68.Text = str[0];// CodeAllContent("poverhovist", "name_poverh", "code_poverh", comboBox8.SelectedItem);
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+           
         }
 
         private void textBox18_TextChanged(object sender, EventArgs e)
@@ -4720,40 +4822,45 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void comboBox25_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string[] str = comboBox25.SelectedItem.ToString().Split(';');
             comboBox25.BackColor = Color.White;
-            textBox92.Text = CodeAllContent("moment_smerti", "moment", "code_moment", comboBox25.SelectedItem);
+            textBox92.Text = CodeAllContent("moment_smerti", "moment", "code_moment", str[1]);
             textBox92.BackColor = Color.White;
             textBox92.ForeColor = Color.Black;
         }
 
         private void comboBox26_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string[] str = comboBox26.SelectedItem.ToString().Split(';');
             comboBox26.BackColor = Color.White;
-            textBox93.Text = CodeAllContent("moment_smerti", "moment", "code_moment", comboBox26.SelectedItem);
+            textBox93.Text = CodeAllContent("moment_smerti", "moment", "code_moment", str[1]);
             textBox93.BackColor = Color.White;
             textBox93.ForeColor = Color.Black;
         }
 
         private void comboBox27_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string[] str = comboBox27.SelectedItem.ToString().Split(';');
             comboBox27.BackColor = Color.White;
-            textBox94.Text = CodeAllContent("moment_smerti", "moment", "code_moment", comboBox27.SelectedItem);
+            textBox94.Text = CodeAllContent("moment_smerti", "moment", "code_moment", str[1]);
             textBox94.BackColor = Color.White;
             textBox94.ForeColor = Color.Black;
         }
 
         private void comboBox28_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string[] str = comboBox28.SelectedItem.ToString().Split(';');
             comboBox28.BackColor = Color.White;
-            textBox95.Text = CodeAllContent("moment_smerti", "moment", "code_moment", comboBox28.SelectedItem);
+            textBox95.Text = CodeAllContent("moment_smerti", "moment", "code_moment", str[1]);
             textBox95.BackColor = Color.White;
             textBox95.ForeColor = Color.Black;
         }
 
         private void comboBox29_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string[] str = comboBox29.SelectedItem.ToString().Split(';');
             comboBox29.BackColor = Color.White;
-            textBox96.Text = CodeAllContent("moment_smerti", "moment", "code_moment", comboBox29.SelectedItem);
+            textBox96.Text = CodeAllContent("moment_smerti", "moment", "code_moment", str[1]);
             textBox96.BackColor = Color.White;
             textBox96.ForeColor = Color.Black;
         }
@@ -5878,26 +5985,25 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
         private void textBox76_TextChanged(object sender, EventArgs e)
         {
             validateIntForm(textBox76);
-            if (textBox147.Text != "")
-            {
-                if (textBox76.Text == "20")
-                {
-                    MessageBox.Show("В це поле неможливо поставити код 20");
-                    textBox76.Text = "";
-                }
-            }
+            
             bool val_cur10 = int.TryParse(textBox76.Text, out int res10);
             if (res10 == 11 || res10 == 12 || res10 == 13)
             {
-                if (textBox146.Text == "")
+                if (textBox146.Text == "" && textBox3.Text=="0")
                 {
                     textBox146.BackColor = Color.Firebrick;
+
+                }
+                if (textBox147.Text == "" && textBox3.Text == "0")
+                {
+                    textBox147.BackColor = Color.Firebrick;
 
                 }
             }
             else
             {
                 textBox146.BackColor = Color.White;
+                textBox147.BackColor = Color.White;
             }
             if (textBox76.Text == "")
             {
@@ -6305,9 +6411,19 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox70.Text = CodeAllContent("type_region", "type_region_item", "code_region_item", comboBox2.SelectedItem);
-            textBox70.BackColor = Color.White;
-            textBox70.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox2.SelectedItem.ToString().Split(';');
+                textBox70.Text = str[0]; //CodeAllContent("type_region", "type_region_item", "code_region_item", comboBox2.SelectedItem);
+                textBox70.BackColor = Color.White;
+                textBox70.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+           
         }
 
        
@@ -6333,37 +6449,86 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox74.Text = CodeAllContent("forma_vlasnosti", "name_forma", "code_forma", comboBox5.SelectedItem);
-            textBox74.BackColor = Color.White;
-            textBox74.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox5.SelectedItem.ToString().Split(';');
+                textBox74.Text = str[0];// CodeAllContent("forma_vlasnosti", "name_forma", "code_forma", comboBox5.SelectedItem);
+                textBox74.BackColor = Color.White;
+                textBox74.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
         }
 
         private void comboBox6_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox75.Text = CodeAllContent("stupin_riziku", "name_riziku", "code_riziku", comboBox6.SelectedItem);
-            textBox75.BackColor = Color.White;
-            textBox75.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox6.SelectedItem.ToString().Split(';');
+                textBox75.Text = str[0];// CodeAllContent("stupin_riziku", "name_riziku", "code_riziku", comboBox6.SelectedItem);
+                textBox75.BackColor = Color.White;
+                textBox75.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+            
         }
 
         private void comboBox7_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox76.Text = CodeAllContent("pidkontrol_object", "name_object", "code_object", comboBox7.SelectedItem);
-            textBox76.BackColor = Color.White;
-            textBox76.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox7.SelectedItem.ToString().Split(';');
+                textBox76.Text = str[0];// CodeAllContent("pidkontrol_object", "name_object", "code_object", comboBox7.SelectedItem);
+                textBox76.BackColor = Color.White;
+                textBox76.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+          
         }
 
         private void comboBox9_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox77.Text = CodeAllContent("vognestoikist", "name_stoikist", "code_stoikist", comboBox9.SelectedItem);
-            textBox77.BackColor = Color.White;
-            textBox77.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox9.SelectedItem.ToString().Split(';');
+                textBox77.Text = str[0];// CodeAllContent("vognestoikist", "name_stoikist", "code_stoikist", comboBox9.SelectedItem);
+                textBox77.BackColor = Color.White;
+                textBox77.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+            
         }
 
         private void comboBox10_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox78.Text = CodeAllContent("category_nebespeki", "name_category", "code_category", comboBox10.SelectedItem);
-            textBox78.BackColor = Color.White;
-            textBox78.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox10.SelectedItem.ToString().Split(';');
+                textBox78.Text = str[0];// CodeAllContent("category_nebespeki", "name_category", "code_category", comboBox10.SelectedItem);
+                textBox78.BackColor = Color.White;
+                textBox78.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+            
         }
 
         private void comboBox11_SelectedIndexChanged(object sender, EventArgs e)
@@ -6448,37 +6613,87 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void comboBox14_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox10.Text = (comboBox14.SelectedIndex + 1).ToString();
-            textBox10.BackColor = Color.White;
-            textBox10.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox14.SelectedItem.ToString().Split(';');
+                textBox10.Text = str[0];// (comboBox14.SelectedIndex + 1).ToString();
+                textBox10.BackColor = Color.White;
+                textBox10.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+           
         }
 
         private void comboBox15_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox83.Text = (comboBox15.SelectedIndex + 1).ToString();
-            textBox83.BackColor = Color.White;
-            textBox83.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox15.SelectedItem.ToString().Split(';');
+                textBox83.Text = str[0];// (comboBox15.SelectedIndex + 1).ToString();
+                textBox83.BackColor = Color.White;
+                textBox83.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+           
         }
 
         private void comboBox16_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox84.Text = (comboBox16.SelectedIndex + 1).ToString();
-            textBox84.BackColor = Color.White;
-            textBox84.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox16.SelectedItem.ToString().Split(';');
+                textBox84.Text = str[0];// (comboBox16.SelectedIndex + 1).ToString();
+                textBox84.BackColor = Color.White;
+                textBox84.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+           
         }
 
         private void comboBox17_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox85.Text = (comboBox17.SelectedIndex + 1).ToString();
-            textBox85.BackColor = Color.White;
-            textBox85.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox17.SelectedItem.ToString().Split(';');
+                textBox85.Text = str[0];// (comboBox17.SelectedIndex + 1).ToString();
+                textBox85.BackColor = Color.White;
+                textBox85.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+            
         }
 
         private void comboBox18_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox86.Text = (comboBox18.SelectedIndex + 1).ToString();
-            textBox86.BackColor = Color.White;
-            textBox86.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox18.SelectedItem.ToString().Split(';');
+                textBox86.Text = str[0];// (comboBox18.SelectedIndex + 1).ToString();
+                textBox86.BackColor = Color.White;
+                textBox86.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+            
         }
 
         private void comboBox19_SelectedIndexChanged(object sender, EventArgs e)
@@ -6491,114 +6706,212 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void comboBox30_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox97.Text = CodeAllContent("umova_smerti", "name_umova", "code_umova", comboBox30.SelectedItem);
+            string[] str = comboBox30.SelectedItem.ToString().Split(';');
+            textBox97.Text = CodeAllContent("umova_smerti", "name_umova", "code_umova", str[1]);
             textBox97.BackColor = Color.White;
             textBox97.ForeColor = Color.Black;
         }
 
         private void comboBox31_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox98.Text = CodeAllContent("umova_smerti", "name_umova", "code_umova", comboBox31.SelectedItem);
+            string[] str = comboBox31.SelectedItem.ToString().Split(';');
+            textBox98.Text = CodeAllContent("umova_smerti", "name_umova", "code_umova", str[1]);
             textBox98.BackColor = Color.White;
             textBox98.ForeColor = Color.Black;
         }
 
         private void comboBox32_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox99.Text = CodeAllContent("umova_smerti", "name_umova", "code_umova", comboBox32.SelectedItem);
+            string[] str = comboBox32.SelectedItem.ToString().Split(';');
+            textBox99.Text = CodeAllContent("umova_smerti", "name_umova", "code_umova", str[1]);
             textBox99.BackColor = Color.White;
             textBox99.ForeColor = Color.Black;
         }
 
         private void comboBox33_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox100.Text = CodeAllContent("umova_smerti", "name_umova", "code_umova", comboBox33.SelectedItem);
+            string[] str = comboBox33.SelectedItem.ToString().Split(';');
+            textBox100.Text = CodeAllContent("umova_smerti", "name_umova", "code_umova", str[1]);
             textBox100.BackColor = Color.White;
             textBox100.ForeColor = Color.Black;
         }
 
         private void comboBox34_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox101.Text = CodeAllContent("umova_smerti", "name_umova", "code_umova", comboBox34.SelectedItem);
+            string[] str = comboBox34.SelectedItem.ToString().Split(';');
+            textBox101.Text = CodeAllContent("umova_smerti", "name_umova", "code_umova", str[1]);
             textBox101.BackColor = Color.White;
             textBox101.ForeColor = Color.Black;
         }
 
         private void comboBox35_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox102.Text = CodeAllContent("info_fire", "name_fire_likvid", "code_fire_likvid", comboBox35.SelectedItem);
+            string[] str = comboBox35.SelectedItem.ToString().Split(';');
+            textBox102.Text = CodeAllContent("info_fire", "name_fire_likvid", "code_fire_likvid", str[1]);
             textBox102.BackColor = Color.White;
             textBox102.ForeColor = Color.Black;
         }
 
         private void comboBox36_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox103.Text = CodeAllContent("poshirenya_fire", "umovi_poshireni", "code_poshireni", comboBox36.SelectedItem);
+            string[] str = comboBox36.SelectedItem.ToString().Split(';');
+            textBox103.Text = CodeAllContent("poshirenya_fire", "umovi_poshireni", "code_poshireni", str[1]);
             textBox103.BackColor = Color.White;
             textBox103.ForeColor = Color.Black;
+
+            if (textBox103.Text == textBox104.Text || textBox103.Text == textBox105.Text || textBox103.Text == textBox106.Text || textBox103.Text == textBox107.Text)
+            {
+                textBox103.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox103.Select();
+                textBox103.ScrollToCaret();
+            }
         }
 
         private void comboBox37_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox104.Text = CodeAllContent("poshirenya_fire", "umovi_poshireni", "code_poshireni", comboBox37.SelectedItem);
+            string[] str = comboBox37.SelectedItem.ToString().Split(';');
+            textBox104.Text = CodeAllContent("poshirenya_fire", "umovi_poshireni", "code_poshireni", str[1]);
             textBox104.BackColor = Color.White;
             textBox104.ForeColor = Color.Black;
+
+            if (textBox104.Text == textBox103.Text || textBox104.Text == textBox105.Text || textBox104.Text == textBox106.Text || textBox104.Text == textBox107.Text)
+            {
+                textBox104.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox104.Select();
+                textBox104.ScrollToCaret();
+            }
         }
 
         private void comboBox38_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox105.Text = CodeAllContent("poshirenya_fire", "umovi_poshireni", "code_poshireni", comboBox38.SelectedItem);
+            string[] str = comboBox38.SelectedItem.ToString().Split(';');
+            textBox105.Text = CodeAllContent("poshirenya_fire", "umovi_poshireni", "code_poshireni", str[1]);
             textBox105.BackColor = Color.White;
             textBox105.ForeColor = Color.Black;
+
+            if (textBox105.Text == textBox103.Text || textBox105.Text == textBox104.Text || textBox105.Text == textBox106.Text || textBox105.Text == textBox107.Text)
+            {
+                textBox105.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox105.Select();
+                textBox105.ScrollToCaret();
+            }
         }
 
         private void comboBox39_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox106.Text = CodeAllContent("poshirenya_fire", "umovi_poshireni", "code_poshireni", comboBox39.SelectedItem);
+            string[] str = comboBox39.SelectedItem.ToString().Split(';');
+            textBox106.Text = CodeAllContent("poshirenya_fire", "umovi_poshireni", "code_poshireni", str[1]);
             textBox106.BackColor = Color.White;
             textBox106.ForeColor = Color.Black;
+
+            if (textBox106.Text == textBox103.Text || textBox106.Text == textBox105.Text || textBox106.Text == textBox104.Text || textBox106.Text == textBox107.Text)
+            {
+                textBox106.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox106.Select();
+                textBox106.ScrollToCaret();
+            }
         }
 
         private void comboBox40_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox107.Text = CodeAllContent("poshirenya_fire", "umovi_poshireni", "code_poshireni", comboBox40.SelectedItem);
+            string[] str = comboBox40.SelectedItem.ToString().Split(';');
+            textBox107.Text = CodeAllContent("poshirenya_fire", "umovi_poshireni", "code_poshireni", str[1]);
             textBox107.BackColor = Color.White;
             textBox107.ForeColor = Color.Black;
+
+            if (textBox107.Text == textBox103.Text || textBox107.Text == textBox104.Text || textBox107.Text == textBox105.Text || textBox107.Text == textBox106.Text)
+            {
+
+                    textBox107.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox107.Select();
+                    textBox107.ScrollToCaret();
+                
+            }
         }
 
         private void comboBox45_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox112.Text = CodeAllContent("uskladnenya_fire", "name_uskl", "code_uskl", comboBox45.SelectedItem);
+            string[] str = comboBox45.SelectedItem.ToString().Split(';');
+            textBox112.Text = CodeAllContent("uskladnenya_fire", "name_uskl", "code_uskl", str[1]);
             textBox112.BackColor = Color.White;
             textBox112.ForeColor = Color.Black;
+
+            if (textBox112.Text == textBox108.Text || textBox112.Text == textBox109.Text || textBox112.Text == textBox110.Text || textBox112.Text == textBox111.Text)
+            {
+                textBox112.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox112.Select();
+                textBox112.ScrollToCaret();
+            }
         }
 
         private void comboBox44_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox111.Text = CodeAllContent("uskladnenya_fire", "name_uskl", "code_uskl", comboBox44.SelectedItem);
+            string[] str = comboBox44.SelectedItem.ToString().Split(';');
+            textBox111.Text = CodeAllContent("uskladnenya_fire", "name_uskl", "code_uskl", str[1]);
             textBox111.BackColor = Color.White;
             textBox111.ForeColor = Color.Black;
+
+            if (textBox111.Text == textBox108.Text || textBox111.Text == textBox109.Text || textBox111.Text == textBox110.Text || textBox111.Text == textBox112.Text)
+            {
+                textBox111.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox111.Select();
+                textBox111.ScrollToCaret();
+            }
         }
 
         private void comboBox43_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox110.Text = CodeAllContent("uskladnenya_fire", "name_uskl", "code_uskl", comboBox43.SelectedItem);
+            string[] str = comboBox43.SelectedItem.ToString().Split(';');
+            textBox110.Text = CodeAllContent("uskladnenya_fire", "name_uskl", "code_uskl", str[1]);
             textBox110.BackColor = Color.White;
             textBox110.ForeColor = Color.Black;
+
+            if (textBox110.Text == textBox108.Text || textBox110.Text == textBox109.Text || textBox110.Text == textBox111.Text || textBox110.Text == textBox112.Text)
+            {
+                textBox110.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox110.Select();
+                textBox110.ScrollToCaret();
+            }
         }
 
         private void comboBox42_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox109.Text = CodeAllContent("uskladnenya_fire", "name_uskl", "code_uskl", comboBox42.SelectedItem);
+            string[] str = comboBox42.SelectedItem.ToString().Split(';');
+            textBox109.Text = CodeAllContent("uskladnenya_fire", "name_uskl", "code_uskl", str[1]);
             textBox109.BackColor = Color.White;
             textBox109.ForeColor = Color.Black;
+
+            if (textBox109.Text == textBox108.Text || textBox109.Text == textBox110.Text || textBox109.Text == textBox111.Text || textBox109.Text == textBox112.Text)
+            {
+                textBox109.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox109.Select();
+                textBox109.ScrollToCaret();
+            }
         }
 
         private void comboBox41_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox108.Text = CodeAllContent("uskladnenya_fire", "name_uskl", "code_uskl", comboBox41.SelectedItem);
+            string[] str = comboBox41.SelectedItem.ToString().Split(';');
+            textBox108.Text = CodeAllContent("uskladnenya_fire", "name_uskl", "code_uskl", str[1]);
             textBox108.BackColor = Color.White;
             textBox108.ForeColor = Color.Black;
+
+            if (textBox108.Text == textBox109.Text || textBox108.Text == textBox110.Text || textBox108.Text == textBox111.Text || textBox108.Text == textBox112.Text)
+            {
+                textBox108.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox108.Select();
+                textBox108.ScrollToCaret();
+            }
         }
 
         private void comboBox47_SelectedIndexChanged(object sender, EventArgs e)
@@ -6673,154 +6986,288 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void comboBox57_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox128.Text = CodeAllContent("uchasnik_fire", "name_uchasnik", "code_uchasnik", comboBox57.SelectedItem);
+            string[] str = comboBox57.SelectedItem.ToString().Split(';');
+            textBox128.Text = CodeAllContent("uchasnik_fire", "name_uchasnik", "code_uchasnik", str[1]);
             textBox128.BackColor = Color.White;
             textBox128.ForeColor = Color.Black;
         }
 
         private void comboBox58_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox127.Text = CodeAllContent("uchasnik_fire", "name_uchasnik", "code_uchasnik", comboBox58.SelectedItem);
+            string[] str = comboBox58.SelectedItem.ToString().Split(';');
+            textBox127.Text = CodeAllContent("uchasnik_fire", "name_uchasnik", "code_uchasnik", str[1]);
             textBox127.BackColor = Color.White;
             textBox127.ForeColor = Color.Black;
         }
 
         private void comboBox59_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox126.Text = CodeAllContent("uchasnik_fire", "name_uchasnik", "code_uchasnik", comboBox59.SelectedItem);
+            string[] str = comboBox59.SelectedItem.ToString().Split(';');
+            textBox126.Text = CodeAllContent("uchasnik_fire", "name_uchasnik", "code_uchasnik", str[1]);
             textBox126.BackColor = Color.White;
             textBox126.ForeColor = Color.Black;
         }
 
         private void comboBox60_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox125.Text = CodeAllContent("uchasnik_fire", "name_uchasnik", "code_uchasnik", comboBox60.SelectedItem);
+            string[] str = comboBox60.SelectedItem.ToString().Split(';');
+            textBox125.Text = CodeAllContent("uchasnik_fire", "name_uchasnik", "code_uchasnik", str[1]);
             textBox125.BackColor = Color.White;
             textBox125.ForeColor = Color.Black;
         }
 
         private void comboBox61_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox124.Text = CodeAllContent("uchasnik_fire", "name_uchasnik", "code_uchasnik", comboBox61.SelectedItem);
+            string[] str = comboBox61.SelectedItem.ToString().Split(';');
+            textBox124.Text = CodeAllContent("uchasnik_fire", "name_uchasnik", "code_uchasnik", str[1]);
             textBox124.BackColor = Color.White;
             textBox124.ForeColor = Color.Black;
         }
 
         private void comboBox66_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox129.Text = CodeAllContent("fire_auto", "name_auto", "code_auto", comboBox66.SelectedItem);
+            string[] str = comboBox66.SelectedItem.ToString().Split(';');
+            textBox129.Text = CodeAllContent("fire_auto", "name_auto", "code_auto", str[1]);
             textBox129.BackColor = Color.White;
             textBox129.ForeColor = Color.Black;
+
+            if (textBox129.Text == textBox130.Text || textBox129.Text == textBox131.Text || textBox129.Text == textBox132.Text || textBox129.Text == textBox133.Text)
+            {
+                textBox129.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox129.Select();
+                textBox129.ScrollToCaret();
+            }
         }
 
         private void comboBox65_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox130.Text = CodeAllContent("fire_auto", "name_auto", "code_auto", comboBox65.SelectedItem);
+            string[] str = comboBox65.SelectedItem.ToString().Split(';');
+            textBox130.Text = CodeAllContent("fire_auto", "name_auto", "code_auto", str[1]);
             textBox130.BackColor = Color.White;
             textBox130.ForeColor = Color.Black;
+
+            if (textBox130.Text == textBox129.Text || textBox130.Text == textBox131.Text || textBox130.Text == textBox132.Text || textBox130.Text == textBox133.Text)
+            {
+                textBox130.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox130.Select();
+                textBox130.ScrollToCaret();
+            }
         }
 
         private void comboBox64_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox131.Text = CodeAllContent("fire_auto", "name_auto", "code_auto", comboBox64.SelectedItem);
+            string[] str = comboBox64.SelectedItem.ToString().Split(';');
+            textBox131.Text = CodeAllContent("fire_auto", "name_auto", "code_auto", str[1]);
             textBox131.BackColor = Color.White;
             textBox131.ForeColor = Color.Black;
+
+            if (textBox131.Text == textBox129.Text || textBox131.Text == textBox130.Text || textBox131.Text == textBox132.Text || textBox131.Text == textBox133.Text)
+            {
+                textBox131.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox131.Select();
+                textBox131.ScrollToCaret();
+            }
         }
 
         private void comboBox63_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox132.Text = CodeAllContent("fire_auto", "name_auto", "code_auto", comboBox63.SelectedItem);
+            string[] str = comboBox63.SelectedItem.ToString().Split(';');
+            textBox132.Text = CodeAllContent("fire_auto", "name_auto", "code_auto", str[1]);
             textBox132.BackColor = Color.White;
             textBox132.ForeColor = Color.Black;
+
+            if (textBox132.Text == textBox129.Text || textBox132.Text == textBox130.Text || textBox132.Text == textBox131.Text || textBox132.Text == textBox133.Text)
+            {
+                textBox132.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox132.Select();
+                textBox132.ScrollToCaret();
+            }
         }
 
         private void comboBox62_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox133.Text = CodeAllContent("fire_auto", "name_auto", "code_auto", comboBox62.SelectedItem);
+            string[] str = comboBox62.SelectedItem.ToString().Split(';');
+            textBox133.Text = CodeAllContent("fire_auto", "name_auto", "code_auto", str[1]);
             textBox133.BackColor = Color.White;
             textBox133.ForeColor = Color.Black;
+
+            if (textBox133.Text == textBox129.Text || textBox133.Text == textBox131.Text || textBox133.Text == textBox132.Text || textBox133.Text == textBox130.Text)
+            {
+                textBox133.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox133.Select();
+                textBox133.ScrollToCaret();
+            }
         }
 
         private void comboBox67_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox134.Text = CodeAllContent("fire_stvoli", "name_stvol", "code_stvol", comboBox67.SelectedItem);
+            string[] str = comboBox67.SelectedItem.ToString().Split(';');
+            textBox134.Text = CodeAllContent("fire_stvoli", "name_stvol", "code_stvol", str[1]);
             textBox134.BackColor = Color.White;
             textBox134.ForeColor = Color.Black;
+
+            if (textBox134.Text == textBox135.Text || textBox134.Text == textBox136.Text)
+            {
+                textBox134.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox134.Select();
+                textBox134.ScrollToCaret();
+            }
         }
 
         private void comboBox68_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox135.Text = CodeAllContent("fire_stvoli", "name_stvol", "code_stvol", comboBox68.SelectedItem);
+            string[] str = comboBox68.SelectedItem.ToString().Split(';');
+            textBox135.Text = CodeAllContent("fire_stvoli", "name_stvol", "code_stvol", str[1]);
             textBox135.BackColor = Color.White;
             textBox135.ForeColor = Color.Black;
+
+            if (textBox135.Text == textBox134.Text || textBox135.Text == textBox136.Text)
+            {
+                textBox135.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox135.Select();
+                textBox135.ScrollToCaret();
+            }
         }
 
         private void comboBox69_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox136.Text = CodeAllContent("fire_stvoli", "name_stvol", "code_stvol", comboBox69.SelectedItem);
+            string[] str = comboBox69.SelectedItem.ToString().Split(';');
+            textBox136.Text = CodeAllContent("fire_stvoli", "name_stvol", "code_stvol", str[1]);
             textBox136.BackColor = Color.White;
             textBox136.ForeColor = Color.Black;
+
+            if (textBox136.Text == textBox135.Text || textBox136.Text == textBox134.Text)
+            {
+                textBox136.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox136.Select();
+                textBox136.ScrollToCaret();
+            }
         }
 
         private void comboBox72_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox137.Text = CodeAllContent("vognegasni_rechovini", "name_rechovini", "code_rechovini", comboBox72.SelectedItem);
+            string[] str = comboBox72.SelectedItem.ToString().Split(';');
+            textBox137.Text = CodeAllContent("vognegasni_rechovini", "name_rechovini", "code_rechovini", str[1]);
             textBox137.BackColor = Color.White;
             textBox137.ForeColor = Color.Black;
+
+            if (textBox137.Text == textBox138.Text || textBox137.Text == textBox139.Text)
+            {
+                textBox137.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox137.Select();
+                textBox137.ScrollToCaret();
+            }
         }
 
         private void comboBox71_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox138.Text = CodeAllContent("vognegasni_rechovini", "name_rechovini", "code_rechovini", comboBox71.SelectedItem);
+            string[] str = comboBox71.SelectedItem.ToString().Split(';');
+            textBox138.Text = CodeAllContent("vognegasni_rechovini", "name_rechovini", "code_rechovini", str[1]);
             textBox138.BackColor = Color.White;
             textBox138.ForeColor = Color.Black;
+
+            if (textBox138.Text == textBox137.Text || textBox138.Text == textBox139.Text)
+            {
+                textBox138.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox138.Select();
+                textBox138.ScrollToCaret();
+            }
         }
 
         private void comboBox70_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox139.Text = CodeAllContent("vognegasni_rechovini", "name_rechovini", "code_rechovini", comboBox70.SelectedItem);
+            string[] str = comboBox70.SelectedItem.ToString().Split(';');
+            textBox139.Text = CodeAllContent("vognegasni_rechovini", "name_rechovini", "code_rechovini", str[1]);
             textBox139.BackColor = Color.White;
             textBox139.ForeColor = Color.Black;
+
+            if (textBox139.Text == textBox138.Text || textBox139.Text == textBox137.Text)
+            {
+                textBox139.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox139.Select();
+                textBox139.ScrollToCaret();
+            }
         }
 
         private void comboBox75_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox140.Text = CodeAllContent("zacobi_fire", "name_zasobi", "code_zasobi", comboBox75.SelectedItem);
+            string[] str = comboBox75.SelectedItem.ToString().Split(';');
+            textBox140.Text = CodeAllContent("zacobi_fire", "name_zasobi", "code_zasobi", str[1]);
             textBox140.BackColor = Color.White;
             textBox140.ForeColor = Color.Black;
+
+            if (textBox140.Text == textBox141.Text || textBox140.Text == textBox142.Text)
+            {
+                textBox140.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox140.Select();
+                textBox140.ScrollToCaret();
+            }
         }
 
         private void comboBox74_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox141.Text = CodeAllContent("zacobi_fire", "name_zasobi", "code_zasobi", comboBox74.SelectedItem);
+            string[] str = comboBox74.SelectedItem.ToString().Split(';');
+            textBox141.Text = CodeAllContent("zacobi_fire", "name_zasobi", "code_zasobi", str[1]);
             textBox141.BackColor = Color.White;
             textBox141.ForeColor = Color.Black;
+
+            if (textBox141.Text == textBox140.Text || textBox141.Text == textBox142.Text)
+            {
+                textBox141.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox141.Select();
+                textBox141.ScrollToCaret();
+            }
         }
 
         private void comboBox73_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox142.Text = CodeAllContent("zacobi_fire", "name_zasobi", "code_zasobi", comboBox73.SelectedItem);
+            string[] str = comboBox73.SelectedItem.ToString().Split(';');
+            textBox142.Text = CodeAllContent("zacobi_fire", "name_zasobi", "code_zasobi", str[1]);
             textBox142.BackColor = Color.White;
             textBox142.ForeColor = Color.Black;
+
+            if (textBox142.Text == textBox141.Text || textBox142.Text == textBox140.Text)
+            {
+                textBox142.Text = "";
+                MessageBox.Show("Коди не мають повторюватись!");
+                textBox142.Select();
+                textBox142.ScrollToCaret();
+            }
         }
 
         private void comboBox78_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox143.Text = CodeAllContent("djerela_vodopostachanaya", "name_djerela", "code_djerela", comboBox78.SelectedItem);
+            string[] str = comboBox78.SelectedItem.ToString().Split(';');
+            textBox143.Text = CodeAllContent("djerela_vodopostachanaya", "name_djerela", "code_djerela", str[1]);
             textBox143.BackColor = Color.White;
             textBox143.ForeColor = Color.Black;
         }
 
         private void comboBox77_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox144.Text = CodeAllContent("djerela_vodopostachanaya", "name_djerela", "code_djerela", comboBox77.SelectedItem);
+            string[] str = comboBox77.SelectedItem.ToString().Split(';');
+            textBox144.Text = CodeAllContent("djerela_vodopostachanaya", "name_djerela", "code_djerela", str[1]);
             textBox144.BackColor = Color.White;
             textBox144.ForeColor = Color.Black;
         }
 
         private void comboBox76_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox145.Text = CodeAllContent("djerela_vodopostachanaya", "name_djerela", "code_djerela", comboBox76.SelectedItem);
+            string[] str = comboBox76.SelectedItem.ToString().Split(';');
+            textBox145.Text = CodeAllContent("djerela_vodopostachanaya", "name_djerela", "code_djerela", str[1]);
             textBox145.BackColor = Color.White;
             textBox145.ForeColor = Color.Black;
         }
@@ -6905,7 +7352,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                    
                 }
             }
-            if(res>=1 && res < 210)
+            if((res>=1 && res < 210) || (res>=1501 && res<1520))
             {
                 if (textBox78.Text == "")
                 {
@@ -6963,7 +7410,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 }
                 else
                 {
-                    MessageBox.Show("В це поле можно внести тільки коди від 1 до 6", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Це поле може містити коди від 1 до 6", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     textBox70.Text = "";
                 }
             }
@@ -6991,7 +7438,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 code = int.Parse(textBox69.Text);
                 if(code> 27 || code<=0)
                 {
-                    MessageBox.Show("В це поле можно внести тільки коди від 1 до 27", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Це поле може містити коди від 1 до 27", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     textBox69.Text = "";
                 }
             }
@@ -7008,7 +7455,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
-            dateTimePicker1.MaxDate = dateTimePicker10.Value;
+            //dateTimePicker1.MaxDate = dateTimePicker10.Value;
             maskedTextBox1.Text = dateTimePicker1.Value.ToString();
         }
 
@@ -7053,7 +7500,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             if(textBox75.Text!="")
             if (code == "")
             {
-                MessageBox.Show("В це поле можно внести тільки коди 10,20,31,32", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Це поле може містити коди 10,20,31,32", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBox75.Text = "";
                 textBox75.BackColor = Color.Firebrick;
                     textBox75.Select();
@@ -7068,7 +7515,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             {
                 if (code == "")
                 {
-                    MessageBox.Show("В це поле можно внести тільки коди 11,12,13,20", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Це поле може містити тільки коди 11,12,13,20", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     textBox76.Text = "";
                     textBox76.BackColor = Color.Firebrick;
                     textBox76.Select();
@@ -7091,7 +7538,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             validateIntForm(textBox77);
             if (textBox77.Text == "0" || textBox77.Text == "9")
             {
-                MessageBox.Show("В це поле можно внести тільки коди від 1 до 8", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Це поле може містити тільки коди від 1 до 8", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBox77.Text = "";
             }
             bool res = int.TryParse(textBox72.Text, out int val);
@@ -7185,6 +7632,13 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
         private void textBox8_TextChanged_1(object sender, EventArgs e)
         {
             validateIntForm(textBox8);
+            if (textBox8.Text != "")
+            {
+                if (int.Parse(textBox8.Text) > 5)
+                {
+                    textBox8.Text = "";
+                }
+            }
             if (textBox8.Text == "")
             {
                 textBox18.BackColor = Color.White;
@@ -7411,7 +7865,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             validateIntForm(textbox);
             bool state = false;
             int code;
-            string message = "В це поле можно внести тільки коди від " + first + " до " + last;
+            string message = "Це поле може містити коди від " + first + " до " + last;
             state = int.TryParse(textbox.Text, out int code1);
             if (state)
             {
@@ -7591,6 +8045,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
         private void textBox15_TextChanged_1(object sender, EventArgs e)
         {
             validateFloatForm(textBox15);
+            
         }
 
         private void textBox7_TextChanged_1(object sender, EventArgs e)
@@ -7669,12 +8124,14 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 textBox58.BackColor = Color.White;
                 textBox49.BackColor = Color.White;
                 textBox137.BackColor = Color.White;
+                dateTimePicker2.Value = dateTimePicker1.Value;
             }
         }
 
         private void textBox103_TextChanged(object sender, EventArgs e)
         {
             validFieldContent(textBox103, 15, 1, 15);
+           
         }
 
         private void textBox104_TextChanged(object sender, EventArgs e)
@@ -7737,52 +8194,115 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void textBox118_TextChanged(object sender, EventArgs e)
         {
-            validFieldContent(textBox118, 5, 1, 5);
+            //validFieldContent(textBox118, 1, 1, 1);
+            if (textBox118.Text != "" && textBox118.Text != "1")
+            {
+                textBox118.Text = "";
+                MessageBox.Show("Це поле може містити тільки код 1");
+               
+            }
         }
 
         private void textBox117_TextChanged(object sender, EventArgs e)
         {
-            validFieldContent(textBox117, 5, 1, 5);
+            //validFieldContent(textBox117, 2, 2, 2);
+            if (textBox117.Text != "" && textBox117.Text != "2")
+            {
+                textBox117.Text = "";
+                MessageBox.Show("Це поле може містити тільки код 2");
+
+            }
         }
 
         private void textBox116_TextChanged(object sender, EventArgs e)
         {
-            validFieldContent(textBox116, 5, 1, 5);
+            // validFieldContent(textBox116, 5, 1, 5);
+            if (textBox116.Text != "" && textBox116.Text != "3")
+            {
+                textBox116.Text = "";
+                MessageBox.Show("Це поле може містити тільки код 3");
+
+            }
         }
 
         private void textBox115_TextChanged(object sender, EventArgs e)
         {
-            validFieldContent(textBox115, 5, 1, 5);
+            // validFieldContent(textBox115, 5, 1, 5);
+            if (textBox115.Text != "" && textBox115.Text != "4")
+            {
+                textBox115.Text = "";
+                MessageBox.Show("Це поле може містити тільки код 4");
+
+            }
         }
 
         private void textBox114_TextChanged(object sender, EventArgs e)
         {
-            validFieldContent(textBox114, 5, 1, 5);
+            // validFieldContent(textBox114, 5, 1, 5);
+            if (textBox114.Text != "" && textBox114.Text != "5")
+            {
+                textBox114.Text = "";
+                MessageBox.Show("Це поле може містити тільки код 5");
+
+            }
         }
 
         private void textBox123_TextChanged(object sender, EventArgs e)
         {
-            validFieldContent(textBox123, 13, 1, 13);
+            validFieldContent(textBox123, 4, 1, 4);
         }
 
         private void textBox122_TextChanged(object sender, EventArgs e)
         {
-            validFieldContent(textBox122, 13, 1, 13);
+            //validFieldContent(textBox122, 4, 5, 6);
+            if (textBox122.Text != "")
+            {
+                if (textBox122.Text != "5" && textBox122.Text != "6")
+                {
+                    textBox122.Text = "";
+                    MessageBox.Show("Це поле може містити тільки код 5 або 6");
+                }
+            }
         }
 
         private void textBox121_TextChanged(object sender, EventArgs e)
         {
-            validFieldContent(textBox121, 13, 1, 13);
+            //validFieldContent(textBox121, 13, 1, 13);
+            if (textBox121.Text != "")
+            {
+                if (textBox121.Text != "7" && textBox121.Text != "8")
+                {
+                    textBox121.Text = "";
+                    MessageBox.Show("Це поле може містити тільки код 7 або 8");
+                }
+            }
         }
 
         private void textBox120_TextChanged(object sender, EventArgs e)
         {
-            validFieldContent(textBox120, 13, 1, 13);
+            //validFieldContent(textBox120, 13, 1, 13);
+            if (textBox120.Text != "")
+            {
+                if (int.Parse(textBox120.Text) > 11)
+                {
+                    textBox120.Text = "";
+                    MessageBox.Show("Це поле не може бути більше 11");
+                }
+            }
+
         }
 
         private void textBox119_TextChanged(object sender, EventArgs e)
         {
-            validFieldContent(textBox119, 13, 1, 13);
+            // validFieldContent(textBox119, 13, 1, 13);
+            if (textBox119.Text != "")
+            {
+                if (int.Parse(textBox119.Text) > 13)
+                {
+                    textBox119.Text = "";
+                    MessageBox.Show("Це поле не може бути більше 13");
+                }
+            }
         }
 
         private void textBox128_TextChanged(object sender, EventArgs e)
@@ -7795,6 +8315,16 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 {
                    // MessageBox.Show("Ви не можете записати код 1 в це поле");
                     textBox128.Text = "";
+                }
+            }
+            if (textBox128.Text != "")
+            {
+                if (textBox128.Text == textBox127.Text || textBox128.Text == textBox126.Text || textBox128.Text == textBox125.Text || textBox128.Text == textBox124.Text)
+                {
+                    textBox128.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox128.Select();
+                    textBox128.ScrollToCaret();
                 }
             }
         }
@@ -7811,6 +8341,16 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     textBox127.Text = "";
                 }
             }
+            if (textBox127.Text != "")
+            {
+                if (textBox127.Text == textBox128.Text || textBox127.Text == textBox126.Text || textBox127.Text == textBox125.Text || textBox127.Text == textBox124.Text)
+                {
+                    textBox127.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox127.Select();
+                    textBox127.ScrollToCaret();
+                }
+            }
         }
 
         private void textBox126_TextChanged(object sender, EventArgs e)
@@ -7823,6 +8363,16 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 {
                    // MessageBox.Show("Ви не можете записати код 1 в це поле");
                     textBox126.Text = "";
+                }
+            }
+            if (textBox126.Text != "")
+            {
+                if (textBox126.Text == textBox128.Text || textBox126.Text == textBox127.Text || textBox126.Text == textBox125.Text || textBox126.Text == textBox124.Text)
+                {
+                    textBox126.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox126.Select();
+                    textBox126.ScrollToCaret();
                 }
             }
         }
@@ -7839,6 +8389,16 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     textBox125.Text = "";
                 }
             }
+            if (textBox125.Text != "")
+            {
+                if (textBox125.Text == textBox128.Text || textBox125.Text == textBox127.Text || textBox125.Text == textBox126.Text || textBox125.Text == textBox124.Text)
+                {
+                    textBox125.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox125.Select();
+                    textBox125.ScrollToCaret();
+                }
+            }
         }
 
         private void textBox124_TextChanged(object sender, EventArgs e)
@@ -7851,6 +8411,16 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 {
                    // MessageBox.Show("Ви не можете записати код 1 в це поле");
                     textBox124.Text = "";
+                }
+            }
+            if (textBox124.Text != "")
+            {
+                if (textBox124.Text == textBox128.Text || textBox124.Text == textBox127.Text || textBox124.Text == textBox126.Text || textBox124.Text == textBox125.Text)
+                {
+                    textBox124.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox124.Select();
+                    textBox124.ScrollToCaret();
                 }
             }
         }
@@ -7928,16 +8498,47 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
         private void textBox143_TextChanged(object sender, EventArgs e)
         {
             validFieldContent(textBox143, 7, 1, 7);
+            if (textBox143.Text != "")
+            {
+                if (textBox143.Text == textBox144.Text || textBox143.Text == textBox145.Text)
+                {
+                    textBox143.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox143.Select();
+                    textBox143.ScrollToCaret();
+                }
+            }
+           
         }
 
         private void textBox144_TextChanged(object sender, EventArgs e)
         {
             validFieldContent(textBox144, 7, 1, 7);
+            if (textBox144.Text != "")
+            {
+                if (textBox144.Text == textBox143.Text || textBox144.Text == textBox145.Text)
+                {
+                    textBox144.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox144.Select();
+                    textBox144.ScrollToCaret();
+                }
+            }
         }
 
         private void textBox145_TextChanged(object sender, EventArgs e)
         {
             validFieldContent(textBox145, 7, 1, 7);
+            if (textBox145.Text != "")
+            {
+                if (textBox145.Text == textBox144.Text || textBox145.Text == textBox143.Text)
+                {
+                    textBox145.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox145.Select();
+                    textBox145.ScrollToCaret();
+                }
+            }
         }
 
         private void textBox146_TextChanged(object sender, EventArgs e)
@@ -7979,7 +8580,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 else
                 {
                     textBox149.Text = "";
-                    MessageBox.Show("В це поле можно ввести тільки цифри від 4 до 6");
+                    MessageBox.Show("Це поле може містити цифри від 4 до 6");
                 }
             }
         }
@@ -8240,16 +8841,35 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void comboBox83_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox1.Text = CodeAllContent("current_raion", "name_raion", "code_raion", comboBox83.SelectedItem);
-            textBox1.BackColor = Color.White;
-            textBox1.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox83.SelectedItem.ToString().Split(';');
+                textBox1.Text = str[0];//CodeAllContent("current_raion", "name_raion", "code_raion", comboBox83.SelectedItem);
+                textBox1.BackColor = Color.White;
+                textBox1.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+           
         }
 
         private void comboBox85_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox71.Text= CodeAllContent("current_np", "name_np", "code_np", comboBox85.SelectedItem);
-            textBox71.BackColor = Color.White;
-            textBox71.ForeColor = Color.Black;
+            try
+            {
+                string[] str = comboBox85.SelectedItem.ToString().Split(';');
+                textBox71.Text = str[0];// CodeAllContent("current_np", "name_np", "code_np", comboBox85.SelectedItem);
+                textBox71.BackColor = Color.White;
+                textBox71.ForeColor = Color.Black;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+           
         }
 
         private void textBox71_Leave(object sender, EventArgs e)
@@ -8417,15 +9037,16 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             panel2.Visible = false;
             panel5.Visible = false;
             //ReadDb();
-            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya` from kartka_obliku", con_db);
+            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku", con_db);
             rdr = cmd_db.ExecuteReader();
             checkedListBox1.Items.Clear();
 
             while (rdr.Read())
             {
                 // region_items.Add(rdr[1].ToString());
-                checkedListBox1.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                checkedListBox1.Items.Add("код району:" + rdr[3].ToString() + ","+ "назва району:" + rdr[4].ToString() + "," + "номер картки:" + rdr[0].ToString() + "," + rdr[1].ToString()+","+ "адреса:" + rdr[5].ToString() + "," + "об'єкт пожежі:" + rdr[6].ToString() +","+ "дата виникнення:" + "(" + rdr[2].ToString() + ")");
             }
+            label126.Text = checkedListBox1.Items.Count.ToString();
         }
 
         private void button8_Click(object sender, EventArgs e)
@@ -8444,15 +9065,15 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 File.Delete(path);
 
             }
-            string str = "КОД_РЕГ|НАЗВА_РЕГ|КОД_РАЙОНУ|НАЗВА_РАОЙНУ|ТИП_НП|№_КАРТКИ|ОСН_ДОД|ДАТА_ПОЖ|КОД_НП|АДРЕСА|КОД_ОБ|НАЗВА_ ОБ|КОД_ВЛАС|НАЗВА_ВЛАС|КОД_РИЗ|КОД_ПІДК|НАЗВА_ПІДК|КІЛЬК_ПОВ|ПОВЕРХ|КОД_ВОГН|КОД_КАТЕГОР|КОД_МІСЦ|НАЗВА_МІСЦ|КОД_ВИРІБ|НАЗВА_ВИРІБ|КОД_ПРИЧ|НАЗВА_ПРИЧ|ВИЯВЛ_ЗАГ|ВИЯВЛ_ДІТ|ЗАГ_ВНАСЛ|ЗАГ_ДІТ|ЗАГ_ОС|ПІБ1_ЗАГ|ПІБ2_ЗАГ|ПІБ3_ЗАГ|ПІБ4_ЗАГ|ПІБ5_ЗАГ|ВІК1_ЗАГ|ВІК2_ЗАГ|ВІК3_ЗАГ|ВІК4_ЗАГ|ВІК5_ЗАГ|СТАТЬ1_ЗАГ|СТАТЬ2_ЗАГ|СТАТЬ3_ЗАГ|СТАТЬ4_ЗАГ|СТАТЬ5_ЗАГ|СОЦСТАТ1_ЗАГ|СОЦСТАТ2_ЗАГ|СОЦСТАТ3_ЗАГ|СОЦСТАТ4_ЗАГ|СОЦСТАТ5_ЗАГ|МОМ_НАСТ1|МОМ_НАСТ2|МОМ_НАСТ3|МОМ_НАСТ4|МОМ_НАСТ5|УМОВ_ВПЛИВ1|УМОВ_ВПЛИВ2|УМОВ_ВПЛИВ3|УМОВ_ВПЛИВ4|УМОВ_ВПЛИВ5|ТРАВМ_ПОЖ|ТРАВМ_ДІТ|ТРАВМ_ОС|ПРЯМ_ЗБИТ|ПОБ_ЗБИТ|ЗН_БУД|ПОШК_БУД|ЗН_ТЕХН|ПОШК_ТЕХН|ЗН_ЗЕРН|ЗН_ХЛІБ_КОР|ЗН_ХЛІБ_ВАЛК|ЗН_КОРМ|ЗН_ТОРФ|ПОШК_ТОРФ|ЗАГ_ТВАР|ЗАГ_ПТИЦ|ЗН_ТЕКСТ|ВР_ЛЮД|ВР_ДІТ|ВР_ТВАР|ВР_ПТИЦ|ВР_БУД|ВР_ТЕХН|ВР_ЗЕРН|ВР_ХЛІБ_КОР|ВР_ХЛІБ_ВАЛК|ВР_КОРМ|ВР_ТОРФ|ВР_ТЕКСТ|ВР_МАТЦІН|ДАТА_ПОВІД|ЧАС_ПОВІД|ЧАС_ПРИБ|ІНФ_ЛІКВ_ПОЖ|ДАТА_ЛОК|ЧАС_ЛОК|ДАТА_ЛІКВ|ЧАС_ЛІКВ|УМОВ_ПОШИР1|УМОВ_ПОШИР2|УМОВ_ПОШИР3|УМОВ_ПОШИР4|УМОВ_ПОШИР5|УМОВ_УСКЛ1|УМОВ_УСКЛ2|УМОВ_УСКЛ3|УМОВ_УСКЛ4|УМОВ_УСКЛ5|НАЯВ_СПЗ|КОД1_СПЗ|КОД2_СПЗ|КОД3_СПЗ|КОД4_СПЗ|КОД5_СПЗ|КОД1_ДІЇ_СПЗ|КОД2_ДІЇ_СПЗ|КОД3_ДІЇ_СПЗ|КОД4_ДІЇ_СПЗ|КОД5_ДІЇ_СПЗ|УЧАСН1|УЧАСН2|УЧАСН3|УЧАСН4|УЧАСН5|КІЛЬК_УЧ1|КІЛЬК_УЧ2|КІЛЬК_УЧ3|КІЛЬК_УЧ4|КІЛЬК_УЧ5|ТЕХН1|ТЕХН2|ТЕХН3|ТЕХН4|ТЕХН5|КІЛЬК_ТЕХН1|КІЛЬК_ТЕХН2|КІЛЬК_ТЕХН3|КІЛЬК_ТЕХН4|КІЛЬК_ТЕХН5|CТВ1|CТВ2|CТВ3|КІЛЬК_СТВ1|КІЛЬК_СТВ2|КІЛЬК_СТВ3|ВОГН_РЕЧ1|ВОГН_РЕЧ2|ВОГН_РЕЧ3|ПЕРВ_ЗАС1|ПЕРВ_ЗАС2|ПЕРВ_ЗАС3|ДЖЕР1|ДЖЕР2|ДЖЕР3|ВИК_ГДЗС|КІЛЬК_ЛАНОК|ЧАС_ГДЗС|ДАТА_ПЕРЕВ|КОД_ВИД_ПЕРЕВ|КОД_УМОВ_ДІЯЛН|КОД_ЗАХ1|КОД_ЗАХ2|№_СТ_ККУ|ДАТА_ЗАПОВН|ПІБ_ЗАПОВН|" + Environment.NewLine;
+            string str = "КОД_РЕГ|НАЗВА_РЕГ|КОД_РАЙОНУ|НАЗВА_РАЙОНУ|ТИП_НП|№_КАРТКИ|ОСН_ДОД|ДАТА_ПОЖ|КОД_НП|АДРЕСА|КОД_ОБ|НАЗВА_ ОБ|КОД_ВЛАС|НАЗВА_ВЛАС|КОД_РИЗ|КОД_ПІДК|КІЛЬК_ПОВ|ПОВЕРХ|КОД_ВОГН|КОД_КАТЕГОР|КОД_МІСЦ|НАЗВА_МІСЦ|КОД_ВИРІБ|НАЗВА_ВИРІБ|КОД_ПРИЧ|НАЗВА_ПРИЧ|ВИЯВЛ_ЗАГ|ВИЯВЛ_ДІТ|ЗАГ_ВНАСЛ|ЗАГ_ДІТ|ЗАГ_ОС|ПІБ1_ЗАГ|ПІБ2_ЗАГ|ПІБ3_ЗАГ|ПІБ4_ЗАГ|ПІБ5_ЗАГ|ВІК1_ЗАГ|ВІК2_ЗАГ|ВІК3_ЗАГ|ВІК4_ЗАГ|ВІК5_ЗАГ|СТАТЬ1_ЗАГ|СТАТЬ2_ЗАГ|СТАТЬ3_ЗАГ|СТАТЬ4_ЗАГ|СТАТЬ5_ЗАГ|СОЦСТАТ1_ЗАГ|СОЦСТАТ2_ЗАГ|СОЦСТАТ3_ЗАГ|СОЦСТАТ4_ЗАГ|СОЦСТАТ5_ЗАГ|МОМ_НАСТ1|МОМ_НАСТ2|МОМ_НАСТ3|МОМ_НАСТ4|МОМ_НАСТ5|УМОВ_ВПЛИВ1|УМОВ_ВПЛИВ2|УМОВ_ВПЛИВ3|УМОВ_ВПЛИВ4|УМОВ_ВПЛИВ5|ТРАВМ_ПОЖ|ТРАВМ_ДІТ|ТРАВМ_ОС|ПРЯМ_ЗБИТ|ПОБ_ЗБИТ|ЗН_БУД|ПОШК_БУД|ЗН_ТЕХН|ПОШК_ТЕХН|ЗН_ЗЕРН|ЗН_ХЛІБ_КОР|ЗН_ХЛІБ_ВАЛК|ЗН_КОРМ|ЗН_ТОРФ|ПОШК_ТОРФ|ЗАГ_ТВАР|ЗАГ_ПТИЦ|ЗН_ТЕКСТ|ВР_ЛЮД|ВР_ДІТ|ВР_ТВАР|ВР_ПТИЦ|ВР_БУД|ВР_ТЕХН|ВР_ЗЕРН|ВР_ХЛІБ_КОР|ВР_ХЛІБ_ВАЛК|ВР_КОРМ|ВР_ТОРФ|ВР_ТЕКСТ|ВР_МАТЦІН|ДАТА_ПОВІД|ЧАС_ПОВІД|ЧАС_ПРИБ|ІНФ_ЛІКВ_ПОЖ|ДАТА_ЛОК|ЧАС_ЛОК|ДАТА_ЛІКВ|ЧАС_ЛІКВ|УМОВ_ПОШИР1|УМОВ_ПОШИР2|УМОВ_ПОШИР3|УМОВ_ПОШИР4|УМОВ_ПОШИР5|УМОВ_УСКЛ1|УМОВ_УСКЛ2|УМОВ_УСКЛ3|УМОВ_УСКЛ4|УМОВ_УСКЛ5|НАЯВ_СПЗ|КОД1_СПЗ|КОД2_СПЗ|КОД3_СПЗ|КОД4_СПЗ|КОД5_СПЗ|КОД1_ДІЇ_СПЗ|КОД2_ДІЇ_СПЗ|КОД3_ДІЇ_СПЗ|КОД4_ДІЇ_СПЗ|КОД5_ДІЇ_СПЗ|УЧАСН1|УЧАСН2|УЧАСН3|УЧАСН4|УЧАСН5|КІЛЬК_УЧ1|КІЛЬК_УЧ2|КІЛЬК_УЧ3|КІЛЬК_УЧ4|КІЛЬК_УЧ5|ТЕХН1|ТЕХН2|ТЕХН3|ТЕХН4|ТЕХН5|КІЛЬК_ТЕХН1|КІЛЬК_ТЕХН2|КІЛЬК_ТЕХН3|КІЛЬК_ТЕХН4|КІЛЬК_ТЕХН5|CТВ1|CТВ2|CТВ3|КІЛЬК_СТВ1|КІЛЬК_СТВ2|КІЛЬК_СТВ3|ВОГН_РЕЧ1|ВОГН_РЕЧ2|ВОГН_РЕЧ3|ПЕРВ_ЗАС1|ПЕРВ_ЗАС2|ПЕРВ_ЗАС3|ДЖЕР1|ДЖЕР2|ДЖЕР3|ВИК_ГДЗС|КІЛЬК_ЛАНОК|ЧАС_ГДЗС|ДАТА_ПЕРЕВ|КОД_ВИД_ПЕРЕВ|КОД_УМОВ_ДІЯЛН|КОД_ЗАХ1|КОД_ЗАХ2|№_СТ_ККУ|ДАТА_ЗАПОВН|ПІБ_ЗАПОВН|" + Environment.NewLine;
             File.AppendAllText(path, str);
 
             if (checkedListBox1.CheckedItems.Count == 0)
             {
                 foreach (var item in checkedListBox1.Items)
                 {
-                    rep = item.ToString().Split(' ');
-                    rep = rep[2].Split(',');
+                    rep = item.ToString().Split(':');
+                    rep = rep[3].Split(',');
                     select_code = "SELECT * FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1];
                     SavePog_Stat(select_code, path);
                 }
@@ -8463,8 +9084,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             {
                 foreach (var item in checkedListBox1.CheckedItems)
                 {
-                    rep = item.ToString().Split(' ');
-                    rep = rep[2].Split(',');
+                    rep = item.ToString().Split(':');
+                    rep = rep[3].Split(',');
                     select_code = "SELECT * FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1];
                     SavePog_Stat(select_code, path);
                 }
@@ -8525,7 +9146,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                    code_djerela = record["code_djerela"].ToString().Split(',');
                    code_zahodi = record["code_zahodi"].ToString().Split(',');
 
-                   content += record["code_region"] + "|"+record["name_region"]+"|"+ record["code_raion"] + "|"+record["name_raion"]+"|"+record["code_region_item"] + "|" + record["number_cartka"] + "|" + record["main_dop"] + "|" + record["date_viniknenya"] + "|" + record["code_adress"] + "|" + record["name_adress"] + "|" + record["fire_code"] + "|" + record["fire_item"] + "|" + record["code_forma"] + "|" + record["name_forma"] + "|" + record["code_riziku"] + "|" + record["code_object"] + "|" + record["name_object"] + "|" + record["poverhovist"] + "|" + record["code_poverh"] + "|" + record["code_stoikist"] + "|" + record["code_category"] + "|" + record["code_place"] + "|" + record["name_place"] + "|" + record["code_virib"] + "|" + record["item_virib"] + "|" + record["code_pricini"] + "|" + record["name_pricini"] + "|" + record["viavleno"] + "|" + record["via_ditei"] + "|" + record["zag_vnaslidok"] + "|" + record["zag_ditei"] + "|" + record["zag_fire"] + "|" + names[0] + "|" + names[1] + "|" + names[2] + "|" + names[3] + "|" + names[4] + "|" + vik[0] + "|" + vik[1] + "|" + vik[2] + "|" + vik[3] + "|" + vik[4] + "|" + stat[0] + "|" + stat[1] + "|" + stat[2] + "|" + stat[3] + "|" + stat[4] + "|" + status[0] + "|" + status[1] + "|" + status[2] + "|" + status[3] + "|" + status[4] + "|" + code_moment[0] + "|" + code_moment[1] + "|" + code_moment[2] + "|" + code_moment[3] + "|" + code_moment[4] + "|" + code_umovi[0] + "|" + code_umovi[1] + "|" + code_umovi[2] + "|" + code_umovi[3] + "|" + code_umovi[4] + "|" + record["travm"] + "|" + record["travm_ditei"] + "|" + record["travm_fire"] + "|" + record["pramiy"] + "|" + record["pobichniy"] + "|" + record["zn_bud"] + "|" + record["posh_bud"] + "|" + record["zn_tehnika"] + "|" + record["posh_tehnika"] + "|" + record["zn_zerno"] + "|" + record["zn_koreni"] + "|" + record["zn_valki"] + "|" + record["zn_korm"] + "|" + record["zn_torf"] + "|" + record["posh_torf"] + "|" + record["zag_tvarin"] + "|" + record["zag_ptici"] + "|" + record["dop_info"] + "|" + record["vr_ludei"] + "|" + record["vr_ditei"] + "|" + record["vr_tvarin"] + "|" + record["vr_ptici"] + "|" + record["vr_bud"] + "|" + record["vr_tehnika"] + "|" + record["vr_zerno"] + "|" + record["vr_koreni"] + "|" + record["vr_valki"] + "|" + record["vr_korm"] + "|" + record["vr_torf"] + "|" + record["vr_dop"] + "|" + record["vr_mat"] + "|" + record["data_pov"] + "|" + record["time_pov"] + "|" + record["time_pributa"] + "|" + record["code_fire_likvid"] + "|" + record["data_lokal"] + "|" + record["time_lokal"] + "|" + record["data_likvid"] + "|" + record["time_likvid"] + "|" + code_umovi_posh[0] + "|" + code_umovi_posh[1] + "|" + code_umovi_posh[2] + "|" + code_umovi_posh[3] + "|" + code_umovi_posh[4] + "|" + code_umovi_uskl[0] + "|" + code_umovi_uskl[1] + "|" + code_umovi_uskl[2] + "|" + code_umovi_uskl[3] + "|" + code_umovi_uskl[4] + "|" + record["code_spz"] + "|" + code_system[0] + "|" + code_system[1] + "|" + code_system[2] + "|" + code_system[3] + "|" + code_system[4] + "|" + code_dii[0] + "|" + code_dii[1] + "|" + code_dii[2] + "|" + code_dii[3] + "|" + code_dii[4] + "|" + code_uch[0] + "|" + code_uch[1] + "|" + code_uch[2] + "|" + code_uch[3] + "|" + code_uch[4] + "|" + kilk_uch[0] + "|" + kilk_uch[1] + "|" + kilk_uch[2] + "|" + kilk_uch[3] + "|" + kilk_uch[4] + "|" + code_fireauto[0] + "|" + code_fireauto[1] + "|" + code_fireauto[2] + "|" + code_fireauto[3] + "|" + code_fireauto[4] + "|" + kilk_auto[0] + "|" + kilk_auto[1] + "|" + kilk_auto[2] + "|" + kilk_auto[3] + "|" + kilk_auto[4] + "|" + code_firestvol[0] + "|" + code_firestvol[1] + "|" + code_firestvol[2] + "|" + kilk_firestvol[0] + "|" + kilk_firestvol[1] + "|" + kilk_firestvol[2] + "|" + vogn_rech[0] + "|" + vogn_rech[1] + "|" + vogn_rech[2] + "|" + code_perv[0] + "|" + code_perv[1] + "|" + code_perv[2] + "|" + code_djerela[0] + "|" + code_djerela[1] + "|" + code_djerela[2] + "|" + record["vikr_gds"] + "|" + record["kilk_gds"] + "|" + record["time_gds"] + "|" + record["data_perevirki"] + "|" + record["code_perevirka"] + "|" + record["code_dialnist"] + "|" + code_zahodi[0] + "|" + code_zahodi[1] + "|" + record["number_kku"] + "|"+ record["data_zapovnenya"] + "|" + record["pid_osibi"] + Environment.NewLine;
+                   content += record["code_region"] + "|"+record["name_region"]+"|"+ record["code_raion"] + "|"+record["name_raion"]+"|"+record["code_region_item"] + "|" + record["number_cartka"] + "|" + record["main_dop"] + "|" + record["date_viniknenya"] + "|" + record["code_adress"] + "|" + record["name_adress"] + "|" + record["fire_code"] + "|" + record["fire_item"] + "|" + record["code_forma"] + "|" + record["name_forma"] + "|" + record["code_riziku"] + "|" + record["code_object"] + "|" + record["poverhovist"] + "|" + record["code_poverh"] + "|" + record["code_stoikist"] + "|" + record["code_category"] + "|" + record["code_place"] + "|" + record["name_place"] + "|" + record["code_virib"] + "|" + record["item_virib"] + "|" + record["code_pricini"] + "|" + record["name_pricini"] + "|" + record["viavleno"] + "|" + record["via_ditei"] + "|" + record["zag_vnaslidok"] + "|" + record["zag_ditei"] + "|" + record["zag_fire"] + "|" + names[0] + "|" + names[1] + "|" + names[2] + "|" + names[3] + "|" + names[4] + "|" + vik[0] + "|" + vik[1] + "|" + vik[2] + "|" + vik[3] + "|" + vik[4] + "|" + stat[0] + "|" + stat[1] + "|" + stat[2] + "|" + stat[3] + "|" + stat[4] + "|" + status[0] + "|" + status[1] + "|" + status[2] + "|" + status[3] + "|" + status[4] + "|" + code_moment[0] + "|" + code_moment[1] + "|" + code_moment[2] + "|" + code_moment[3] + "|" + code_moment[4] + "|" + code_umovi[0] + "|" + code_umovi[1] + "|" + code_umovi[2] + "|" + code_umovi[3] + "|" + code_umovi[4] + "|" + record["travm"] + "|" + record["travm_ditei"] + "|" + record["travm_fire"] + "|" + record["pramiy"] + "|" + record["pobichniy"] + "|" + record["zn_bud"] + "|" + record["posh_bud"] + "|" + record["zn_tehnika"] + "|" + record["posh_tehnika"] + "|" + record["zn_zerno"] + "|" + record["zn_koreni"] + "|" + record["zn_valki"] + "|" + record["zn_korm"] + "|" + record["zn_torf"] + "|" + record["posh_torf"] + "|" + record["zag_tvarin"] + "|" + record["zag_ptici"] + "|" + record["dop_info"] + "|" + record["vr_ludei"] + "|" + record["vr_ditei"] + "|" + record["vr_tvarin"] + "|" + record["vr_ptici"] + "|" + record["vr_bud"] + "|" + record["vr_tehnika"] + "|" + record["vr_zerno"] + "|" + record["vr_koreni"] + "|" + record["vr_valki"] + "|" + record["vr_korm"] + "|" + record["vr_torf"] + "|" + record["vr_dop"] + "|" + record["vr_mat"] + "|" + record["data_pov"] + "|" + record["time_pov"] + "|" + record["time_pributa"] + "|" + record["code_fire_likvid"] + "|" + record["data_lokal"] + "|" + record["time_lokal"] + "|" + record["data_likvid"] + "|" + record["time_likvid"] + "|" + code_umovi_posh[0] + "|" + code_umovi_posh[1] + "|" + code_umovi_posh[2] + "|" + code_umovi_posh[3] + "|" + code_umovi_posh[4] + "|" + code_umovi_uskl[0] + "|" + code_umovi_uskl[1] + "|" + code_umovi_uskl[2] + "|" + code_umovi_uskl[3] + "|" + code_umovi_uskl[4] + "|" + record["code_spz"] + "|" + code_system[0] + "|" + code_system[1] + "|" + code_system[2] + "|" + code_system[3] + "|" + code_system[4] + "|" + code_dii[0] + "|" + code_dii[1] + "|" + code_dii[2] + "|" + code_dii[3] + "|" + code_dii[4] + "|" + code_uch[0] + "|" + code_uch[1] + "|" + code_uch[2] + "|" + code_uch[3] + "|" + code_uch[4] + "|" + kilk_uch[0] + "|" + kilk_uch[1] + "|" + kilk_uch[2] + "|" + kilk_uch[3] + "|" + kilk_uch[4] + "|" + code_fireauto[0] + "|" + code_fireauto[1] + "|" + code_fireauto[2] + "|" + code_fireauto[3] + "|" + code_fireauto[4] + "|" + kilk_auto[0] + "|" + kilk_auto[1] + "|" + kilk_auto[2] + "|" + kilk_auto[3] + "|" + kilk_auto[4] + "|" + code_firestvol[0] + "|" + code_firestvol[1] + "|" + code_firestvol[2] + "|" + kilk_firestvol[0] + "|" + kilk_firestvol[1] + "|" + kilk_firestvol[2] + "|" + vogn_rech[0] + "|" + vogn_rech[1] + "|" + vogn_rech[2] + "|" + code_perv[0] + "|" + code_perv[1] + "|" + code_perv[2] + "|" + code_djerela[0] + "|" + code_djerela[1] + "|" + code_djerela[2] + "|" + record["vikr_gds"] + "|" + record["kilk_gds"] + "|" + record["time_gds"] + "|" + record["data_perevirki"] + "|" + record["code_perevirka"] + "|" + record["code_dialnist"] + "|" + code_zahodi[0] + "|" + code_zahodi[1] + "|" + record["number_kku"] + "|"+ record["data_zapovnenya"] + "|" + record["pid_osibi"] + Environment.NewLine;
 
                    content.Trim().Replace(" ", "");
                }
@@ -8536,41 +9157,53 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
         private void button10_Click(object sender, EventArgs e)
         {
 
-            //Console.WriteLine(dateTimePicker11.Value.Date);
-            CheckedListBox list = new CheckedListBox();
-            for (int i = 0; i < checkedListBox1.Items.Count; i++)
+            try
             {
-                list.Items.Add(checkedListBox1.Items[i]);
-            }
-            checkedListBox1.Items.Clear();
-            string[] date_string;
-           
-            
-            for (int i = 0; i < list.Items.Count; i++)
-            {
-                date_string = list.Items[i].ToString().Split('(');
-                date_string[1] = date_string[1].Remove(date_string[1].Length - 1);
-                DateTime date = DateTime.Parse(date_string[1]);
-                if(date>=dateTimePicker11.Value && date <= dateTimePicker12.Value)
+                CheckedListBox list = new CheckedListBox();
+                for (int i = 0; i < checkedListBox1.Items.Count; i++)
                 {
-                    checkedListBox1.Items.Add(list.Items[i]);
-                    
+                    list.Items.Add(checkedListBox1.Items[i]);
+                }
+                checkedListBox1.Items.Clear();
+                string[] date_string;
+
+
+                for (int i = 0; i < list.Items.Count; i++)
+                {
+                    date_string = list.Items[i].ToString().Split('(');
+                    date_string[1] = date_string[1].Remove(date_string[1].Length - 1);
+                    DateTime date = DateTime.Parse(date_string[1]);
+
+
+                    if (date >= dateTimePicker11.Value && date <= dateTimePicker12.Value)
+                    {
+                        checkedListBox1.Items.Add(list.Items[i]);
+
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+            //Console.WriteLine(dateTimePicker11.Value.Date);
+            label126.Text = checkedListBox1.Items.Count.ToString();
         }
 
         private void button11_Click(object sender, EventArgs e)
         {
             //ReadDb();
-            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya` from kartka_obliku", con_db);
+            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku", con_db);
             rdr = cmd_db.ExecuteReader();
             checkedListBox1.Items.Clear();
 
             while (rdr.Read())
             {
                 // region_items.Add(rdr[1].ToString());
-                checkedListBox1.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                checkedListBox1.Items.Add("код району:" + rdr[3].ToString() + "," + "назва району:" + rdr[4].ToString() + "," + "номер картки:" + rdr[0].ToString() + "," + rdr[1].ToString() + "," + "адреса:" + rdr[5].ToString() + "," + "об'єкт пожежі:" + rdr[6].ToString() + "," + "дата виникнення:" + "(" + rdr[2].ToString() + ")");
             }
+            label126.Text = checkedListBox1.Items.Count.ToString();
         }
 
         private void textBox81_Leave(object sender, EventArgs e)
@@ -8580,6 +9213,16 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void textBox9_Leave(object sender, EventArgs e)
         {
+            try
+            {
+                float res = float.Parse(textBox9.Text);
+                textBox9.Text = String.Format("{0:0.000}", res);
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
            
         }
 
@@ -8605,15 +9248,17 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             panel3.Visible = false;
             panel2.Visible = false;
             panel5.Visible = false;
-            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya` from kartka_obliku", con_db);
+            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku", con_db);
             rdr = cmd_db.ExecuteReader();
             checkedListBox2.Items.Clear();
 
             while (rdr.Read())
             {
                 // region_items.Add(rdr[1].ToString());
-                checkedListBox2.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+         
+                checkedListBox2.Items.Add("код району:" + rdr[3].ToString() + "," + "назва району:" + rdr[4].ToString() + "," + "номер картки:" + rdr[0].ToString() + "," + rdr[1].ToString() + "," + "адреса:" + rdr[5].ToString() + "," + "об'єкт пожежі:" + rdr[6].ToString() + "," + "дата виникнення:" + "(" + rdr[2].ToString() + ")");
             }
+            label122.Text = checkedListBox2.Items.Count.ToString();
         }
 
         private void button12_Click(object sender, EventArgs e)
@@ -8638,8 +9283,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             string code_region = "";
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `name_region` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1];
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8657,8 +9302,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `main_dop` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop="+rep[1];
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8672,8 +9317,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `pramiy` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1];
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8682,13 +9327,12 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 {
                     //if (rdr[0].ToString() == "0")
                         pramiy += float.Parse(rdr[0].ToString());
-                    Console.WriteLine(rdr[0].ToString());
                 }
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `pobichniy` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1];
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8702,8 +9346,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `via_ditei` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1];
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8716,8 +9360,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `viavleno` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1];
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8730,8 +9374,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `main_dop` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1]+" AND (code_region_item=1 OR code_region_item=2 OR code_region_item=4)";
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8745,8 +9389,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `pramiy` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1] + " AND (code_region_item=1 OR code_region_item=2 OR code_region_item=4)";
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8758,8 +9402,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `pobichniy` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1] + " AND (code_region_item=1 OR code_region_item=2 OR code_region_item=4)";
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8773,8 +9417,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `viavleno` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1] + " AND (code_region_item=1 OR code_region_item=2 OR code_region_item=4)";
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8788,8 +9432,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `via_ditei` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1] + " AND (code_region_item=1 OR code_region_item=2 OR code_region_item=4)";
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8803,8 +9447,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `main_dop` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1] + " AND (code_object=11 OR code_object=12 OR code_object=13)";
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8818,8 +9462,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `pramiy` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1] + " AND (code_object=11 OR code_object=12 OR code_object=13)";
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8832,8 +9476,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `pobichniy` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1] + " AND (code_object=11 OR code_object=12 OR code_object=13)";
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8847,8 +9491,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `viavleno` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1] + " AND (code_object=11 OR code_object=12 OR code_object=13)";
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -8862,8 +9506,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             foreach (var item in checkedListBox2.Items)
             {
-                rep = item.ToString().Split(' ');
-                rep = rep[2].Split(',');
+                rep = item.ToString().Split(':');
+                rep = rep[3].Split(',');
                 select_code = "SELECT `via_ditei` FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1] + " AND (code_object=11 OR code_object=12 OR code_object=13)";
                 cmd_db = new SQLiteCommand(select_code, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -9068,38 +9712,48 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void button14_Click(object sender, EventArgs e)
         {
-            CheckedListBox list = new CheckedListBox();
-            for (int i = 0; i < checkedListBox2.Items.Count; i++)
+            try
             {
-                list.Items.Add(checkedListBox2.Items[i]);
-            }
-            checkedListBox2.Items.Clear();
-            string[] date_string;
-
-
-            for (int i = 0; i < list.Items.Count; i++)
-            {
-                date_string = list.Items[i].ToString().Split('(');
-                date_string[1] = date_string[1].Remove(date_string[1].Length - 1);
-                DateTime date = DateTime.Parse(date_string[1]);
-                if (date >= dateTimePicker13.Value && date <= dateTimePicker14.Value)
+                CheckedListBox list = new CheckedListBox();
+                for (int i = 0; i < checkedListBox2.Items.Count; i++)
                 {
-                    checkedListBox2.Items.Add(list.Items[i]);
+                    list.Items.Add(checkedListBox2.Items[i]);
+                }
+                checkedListBox2.Items.Clear();
+                string[] date_string;
+
+
+                for (int i = 0; i < list.Items.Count; i++)
+                {
+                    date_string = list.Items[i].ToString().Split('(');
+                    date_string[1] = date_string[1].Remove(date_string[1].Length - 1);
+                    DateTime date = DateTime.Parse(date_string[1]);
+                    if (date >= dateTimePicker13.Value && date <= dateTimePicker14.Value)
+                    {
+                        checkedListBox2.Items.Add(list.Items[i]);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+            label122.Text = checkedListBox2.Items.Count.ToString();
         }
 
         private void button15_Click(object sender, EventArgs e)
         {
-            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya` from kartka_obliku", con_db);
+            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku", con_db);
             rdr = cmd_db.ExecuteReader();
             checkedListBox2.Items.Clear();
 
             while (rdr.Read())
             {
                 // region_items.Add(rdr[1].ToString());
-                checkedListBox2.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                checkedListBox2.Items.Add("код району:" + rdr[3].ToString() + "," + "назва району:" + rdr[4].ToString() + "," + "номер картки:" + rdr[0].ToString() + "," + rdr[1].ToString() + "," + "адреса:" + rdr[5].ToString() + "," + "об'єкт пожежі:" + rdr[6].ToString() + "," + "дата виникнення:" + "(" + rdr[2].ToString() + ")");
             }
+            label122.Text = checkedListBox2.Items.Count.ToString();
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -9150,7 +9804,6 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     comboBox12.DroppedDown = true;
                     comboBox12.Focus();
                 }
-
             }
             if (e.KeyCode == Keys.Enter)
             {
@@ -9258,10 +9911,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             {
                 if (masked[i].Name == name)
                 {
-                   
                     datetime[i].Focus();
                     SendKeys.SendWait("%{DOWN}");
-                   // Console.WriteLine(datetime[i].Focused);
                 }
             }
         }
@@ -9319,7 +9970,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     }
                     if (code > 9)
                     {
-                        MessageBox.Show("В це поле можно внести тільки коди від 0 до 9", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Це поле може містити коди від 0 до 9", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         textBox3.Select();
                         textBox3.ScrollToCaret();
                     }
@@ -9498,7 +10149,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
         private void редагуванняToolStripMenuItem_Click(object sender, EventArgs e)
         {
             panel5.Visible = true;
-            button17.Text = "Перейти к редагуванню";
+           // button17.Text = "Перейти к редагуванню";
             button16.Visible = true;
             panel2.Visible = false;
             panel3.Visible = false;
@@ -9507,16 +10158,22 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             radioButton1.Checked = false;
             radioButton2.Checked = false;
 
-            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya` from kartka_obliku", con_db);
-            rdr = cmd_db.ExecuteReader();
-            listBox3.Items.Clear();
-
-            while (rdr.Read())
+            if (flag_form == false)
             {
-                // region_items.Add(rdr[1].ToString());
-                listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                cmd_db = new SQLiteCommand("SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku", con_db);
+                rdr = cmd_db.ExecuteReader();
+                listBox3.Items.Clear();
+
+                while (rdr.Read())
+                {
+                    // region_items.Add(rdr[1].ToString());
+                    // listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
+                }
             }
+           
             label108.Text = listBox3.Items.Count.ToString();
+           
         }
 
         private void button16_Click(object sender, EventArgs e)
@@ -9527,8 +10184,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void button17_Click(object sender, EventArgs e)
         {
-            if(button17.Text=="Перейти к редагуванню")
-            {
+          
                 if (listBox3.SelectedIndex != -1)
                 {
                     foreach (var item in tb)
@@ -9551,8 +10207,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     return;
                 }
                    
-            }
-            if(button17.Text== "Переглянути картку")
+            
+           /* if(button17.Text== "Переглянути картку")
             {
                 if (listBox3.SelectedIndex != -1)
                 {
@@ -9574,64 +10230,8 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     return;
                 }
                    
-            }
-            if (button17.Text == "Видалити картку")
-            {
-                
-                try
-                {
-                    if (listBox3.SelectedIndex!=-1)
-                    {
-                        string res = listBox3.SelectedItem.ToString();
-                        string[] rep;
-                        rep = res.Split(' ');
-                        rep = rep[2].Split('(');
-
-                        DialogResult res_del = MessageBox.Show("Ви впевнені що хочете видалити цю картку", "Увага!", MessageBoxButtons.YesNo);
-                        if (res_del == DialogResult.Yes)
-                        {
-                            cmd_db = new SQLiteCommand("DELETE from kartka_obliku WHERE `id_kartki`=" + rep[1], con_db);
-                            rdr = cmd_db.ExecuteReader();
-                            MessageBox.Show("Картка видалена з бази даних");
-                            cmd_db = new SQLiteCommand("SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku", con_db);
-                            rdr = cmd_db.ExecuteReader();
-                            listBox3.Items.Clear();
-
-                            while (rdr.Read())
-                            {
-                                // region_items.Add(rdr[1].ToString());
-                                listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                            }
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        DialogResult res_del = MessageBox.Show("Ви впевнені що хочете видалити всі картки", "Увага!", MessageBoxButtons.YesNo);
-                        if (res_del == DialogResult.Yes)
-                        {
-                            cmd_db = new SQLiteCommand("DELETE from kartka_obliku", con_db);
-                            rdr = cmd_db.ExecuteReader();
-                            MessageBox.Show("Всі картки видалені з бази даних");
-                            listBox3.Items.Clear();
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-
-                    Console.WriteLine(ex.Message);
-                }
-                label108.Text = listBox3.Items.Count.ToString();
-
-            }
+            }*/
+            
 
             
             foreach (var item in tb)
@@ -9669,9 +10269,9 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             {
                 string res = listBox3.SelectedItem.ToString();
                 string[] rep;
-                rep = res.Split(' ');
-                rep = rep[2].Split(',');
-                string select_code = "SELECT * FROM kartka_obliku WHERE number_cartka=" + rep[0] + " AND main_dop=" + rep[1];
+                rep = res.Split(':');
+                rep = rep[1].Split(',');
+                string select_code = "SELECT * FROM kartka_obliku WHERE id_kartki=" + rep[0];
 
                 EditForm edit = new EditForm();
                 edit.GetFieldfromDb(select_code,this);
@@ -9737,7 +10337,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             }
             if (!File.Exists(path))
             {
-                string str = "КОД_РЕГ|НАЗВА_РЕГ|КОД_РАЙОНУ|НАЗВА_РАОЙНУ|ТИП_НП|№_КАРТКИ|ОСН_ДОД|ДАТА_ПОЖ|КОД_НП|АДРЕСА|КОД_ОБ|НАЗВА_ ОБ|КОД_ВЛАС|НАЗВА_ВЛАС|КОД_РИЗ|КОД_ПІДК|НАЗВА_ПІДК|КІЛЬК_ПОВ|ПОВЕРХ|КОД_ВОГН|КОД_КАТЕГОР|КОД_МІСЦ|НАЗВА_МІСЦ|КОД_ВИРІБ|НАЗВА_ВИРІБ|КОД_ПРИЧ|НАЗВА_ПРИЧ|ВИЯВЛ_ЗАГ|ВИЯВЛ_ДІТ|ЗАГ_ВНАСЛ|ЗАГ_ДІТ|ЗАГ_ОС|ПІБ1_ЗАГ|ПІБ2_ЗАГ|ПІБ3_ЗАГ|ПІБ4_ЗАГ|ПІБ5_ЗАГ|ВІК1_ЗАГ|ВІК2_ЗАГ|ВІК3_ЗАГ|ВІК4_ЗАГ|ВІК5_ЗАГ|СТАТЬ1_ЗАГ|СТАТЬ2_ЗАГ|СТАТЬ3_ЗАГ|СТАТЬ4_ЗАГ|СТАТЬ5_ЗАГ|СОЦСТАТ1_ЗАГ|СОЦСТАТ2_ЗАГ|СОЦСТАТ3_ЗАГ|СОЦСТАТ4_ЗАГ|СОЦСТАТ5_ЗАГ|МОМ_НАСТ1|МОМ_НАСТ2|МОМ_НАСТ3|МОМ_НАСТ4|МОМ_НАСТ5|УМОВ_ВПЛИВ1|УМОВ_ВПЛИВ2|УМОВ_ВПЛИВ3|УМОВ_ВПЛИВ4|УМОВ_ВПЛИВ5|ТРАВМ_ПОЖ|ТРАВМ_ДІТ|ТРАВМ_ОС|ПРЯМ_ЗБИТ|ПОБ_ЗБИТ|ЗН_БУД|ПОШК_БУД|ЗН_ТЕХН|ПОШК_ТЕХН|ЗН_ЗЕРН|ЗН_ХЛІБ_КОР|ЗН_ХЛІБ_ВАЛК|ЗН_КОРМ|ЗН_ТОРФ|ПОШК_ТОРФ|ЗАГ_ТВАР|ЗАГ_ПТИЦ|ЗН_ТЕКСТ|ВР_ЛЮД|ВР_ДІТ|ВР_ТВАР|ВР_ПТИЦ|ВР_БУД|ВР_ТЕХН|ВР_ЗЕРН|ВР_ХЛІБ_КОР|ВР_ХЛІБ_ВАЛК|ВР_КОРМ|ВР_ТОРФ|ВР_ТЕКСТ|ВР_МАТЦІН|ДАТА_ПОВІД|ЧАС_ПОВІД|ЧАС_ПРИБ|ІНФ_ЛІКВ_ПОЖ|ДАТА_ЛОК|ЧАС_ЛОК|ДАТА_ЛІКВ|ЧАС_ЛІКВ|УМОВ_ПОШИР1|УМОВ_ПОШИР2|УМОВ_ПОШИР3|УМОВ_ПОШИР4|УМОВ_ПОШИР5|УМОВ_УСКЛ1|УМОВ_УСКЛ2|УМОВ_УСКЛ3|УМОВ_УСКЛ4|УМОВ_УСКЛ5|НАЯВ_СПЗ|КОД1_СПЗ|КОД2_СПЗ|КОД3_СПЗ|КОД4_СПЗ|КОД5_СПЗ|КОД1_ДІЇ_СПЗ|КОД2_ДІЇ_СПЗ|КОД3_ДІЇ_СПЗ|КОД4_ДІЇ_СПЗ|КОД5_ДІЇ_СПЗ|УЧАСН1|УЧАСН2|УЧАСН3|УЧАСН4|УЧАСН5|КІЛЬК_УЧ1|КІЛЬК_УЧ2|КІЛЬК_УЧ3|КІЛЬК_УЧ4|КІЛЬК_УЧ5|ТЕХН1|ТЕХН2|ТЕХН3|ТЕХН4|ТЕХН5|КІЛЬК_ТЕХН1|КІЛЬК_ТЕХН2|КІЛЬК_ТЕХН3|КІЛЬК_ТЕХН4|КІЛЬК_ТЕХН5|CТВ1|CТВ2|CТВ3|КІЛЬК_СТВ1|КІЛЬК_СТВ2|КІЛЬК_СТВ3|ВОГН_РЕЧ1|ВОГН_РЕЧ2|ВОГН_РЕЧ3|ПЕРВ_ЗАС1|ПЕРВ_ЗАС2|ПЕРВ_ЗАС3|ДЖЕР1|ДЖЕР2|ДЖЕР3|ВИК_ГДЗС|КІЛЬК_ЛАНОК|ЧАС_ГДЗС|ДАТА_ПЕРЕВ|КОД_ВИД_ПЕРЕВ|КОД_УМОВ_ДІЯЛН|КОД_ЗАХ1|КОД_ЗАХ2|№_СТ_ККУ|ДАТА_ЗАПОВН|ПІБ_ЗАПОВН|" + Environment.NewLine;
+                string str = "КОД_РЕГ|НАЗВА_РЕГ|КОД_РАЙОНУ|НАЗВА_РАЙОНУ|ТИП_НП|№_КАРТКИ|ОСН_ДОД|ДАТА_ПОЖ|КОД_НП|АДРЕСА|КОД_ОБ|НАЗВА_ ОБ|КОД_ВЛАС|НАЗВА_ВЛАС|КОД_РИЗ|КОД_ПІДК|КІЛЬК_ПОВ|ПОВЕРХ|КОД_ВОГН|КОД_КАТЕГОР|КОД_МІСЦ|НАЗВА_МІСЦ|КОД_ВИРІБ|НАЗВА_ВИРІБ|КОД_ПРИЧ|НАЗВА_ПРИЧ|ВИЯВЛ_ЗАГ|ВИЯВЛ_ДІТ|ЗАГ_ВНАСЛ|ЗАГ_ДІТ|ЗАГ_ОС|ПІБ1_ЗАГ|ПІБ2_ЗАГ|ПІБ3_ЗАГ|ПІБ4_ЗАГ|ПІБ5_ЗАГ|ВІК1_ЗАГ|ВІК2_ЗАГ|ВІК3_ЗАГ|ВІК4_ЗАГ|ВІК5_ЗАГ|СТАТЬ1_ЗАГ|СТАТЬ2_ЗАГ|СТАТЬ3_ЗАГ|СТАТЬ4_ЗАГ|СТАТЬ5_ЗАГ|СОЦСТАТ1_ЗАГ|СОЦСТАТ2_ЗАГ|СОЦСТАТ3_ЗАГ|СОЦСТАТ4_ЗАГ|СОЦСТАТ5_ЗАГ|МОМ_НАСТ1|МОМ_НАСТ2|МОМ_НАСТ3|МОМ_НАСТ4|МОМ_НАСТ5|УМОВ_ВПЛИВ1|УМОВ_ВПЛИВ2|УМОВ_ВПЛИВ3|УМОВ_ВПЛИВ4|УМОВ_ВПЛИВ5|ТРАВМ_ПОЖ|ТРАВМ_ДІТ|ТРАВМ_ОС|ПРЯМ_ЗБИТ|ПОБ_ЗБИТ|ЗН_БУД|ПОШК_БУД|ЗН_ТЕХН|ПОШК_ТЕХН|ЗН_ЗЕРН|ЗН_ХЛІБ_КОР|ЗН_ХЛІБ_ВАЛК|ЗН_КОРМ|ЗН_ТОРФ|ПОШК_ТОРФ|ЗАГ_ТВАР|ЗАГ_ПТИЦ|ЗН_ТЕКСТ|ВР_ЛЮД|ВР_ДІТ|ВР_ТВАР|ВР_ПТИЦ|ВР_БУД|ВР_ТЕХН|ВР_ЗЕРН|ВР_ХЛІБ_КОР|ВР_ХЛІБ_ВАЛК|ВР_КОРМ|ВР_ТОРФ|ВР_ТЕКСТ|ВР_МАТЦІН|ДАТА_ПОВІД|ЧАС_ПОВІД|ЧАС_ПРИБ|ІНФ_ЛІКВ_ПОЖ|ДАТА_ЛОК|ЧАС_ЛОК|ДАТА_ЛІКВ|ЧАС_ЛІКВ|УМОВ_ПОШИР1|УМОВ_ПОШИР2|УМОВ_ПОШИР3|УМОВ_ПОШИР4|УМОВ_ПОШИР5|УМОВ_УСКЛ1|УМОВ_УСКЛ2|УМОВ_УСКЛ3|УМОВ_УСКЛ4|УМОВ_УСКЛ5|НАЯВ_СПЗ|КОД1_СПЗ|КОД2_СПЗ|КОД3_СПЗ|КОД4_СПЗ|КОД5_СПЗ|КОД1_ДІЇ_СПЗ|КОД2_ДІЇ_СПЗ|КОД3_ДІЇ_СПЗ|КОД4_ДІЇ_СПЗ|КОД5_ДІЇ_СПЗ|УЧАСН1|УЧАСН2|УЧАСН3|УЧАСН4|УЧАСН5|КІЛЬК_УЧ1|КІЛЬК_УЧ2|КІЛЬК_УЧ3|КІЛЬК_УЧ4|КІЛЬК_УЧ5|ТЕХН1|ТЕХН2|ТЕХН3|ТЕХН4|ТЕХН5|КІЛЬК_ТЕХН1|КІЛЬК_ТЕХН2|КІЛЬК_ТЕХН3|КІЛЬК_ТЕХН4|КІЛЬК_ТЕХН5|CТВ1|CТВ2|CТВ3|КІЛЬК_СТВ1|КІЛЬК_СТВ2|КІЛЬК_СТВ3|ВОГН_РЕЧ1|ВОГН_РЕЧ2|ВОГН_РЕЧ3|ПЕРВ_ЗАС1|ПЕРВ_ЗАС2|ПЕРВ_ЗАС3|ДЖЕР1|ДЖЕР2|ДЖЕР3|ВИК_ГДЗС|КІЛЬК_ЛАНОК|ЧАС_ГДЗС|ДАТА_ПЕРЕВ|КОД_ВИД_ПЕРЕВ|КОД_УМОВ_ДІЯЛН|КОД_ЗАХ1|КОД_ЗАХ2|№_СТ_ККУ|ДАТА_ЗАПОВН|ПІБ_ЗАПОВН|" + Environment.NewLine;
                 File.AppendAllText(path, str);
 
                 string[] loadfile = File.ReadAllLines(filename);
@@ -9778,118 +10378,118 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                             dict_db["code_riziku"] = str_db[14];
                             dict_db["name_riziku"] = "";
                             dict_db["code_object"] = str_db[15];
-                            dict_db["name_object"] = str_db[16];
-                            dict_db["poverhovist"] = str_db[17];
-                            dict_db["code_poverh"] = str_db[18];
+                            dict_db["name_object"] = "";
+                            dict_db["poverhovist"] = str_db[16];
+                            dict_db["code_poverh"] = str_db[17];
                             dict_db["name_poverh"] = "";
-                            dict_db["code_stoikist"] = str_db[19];
+                            dict_db["code_stoikist"] = str_db[18];
                             dict_db["name_stoikist"] = "";
-                            dict_db["code_category"] = str_db[20];
+                            dict_db["code_category"] = str_db[19];
                             dict_db["name_category"] = "";
-                            dict_db["code_place"] = str_db[21];
-                            dict_db["name_place"] = str_db[22];
-                            dict_db["code_virib"] = str_db[23];
-                            dict_db["item_virib"] = str_db[24];
-                            dict_db["code_pricini"] = str_db[25];
-                            dict_db["name_pricini"] = str_db[26];
+                            dict_db["code_place"] = str_db[20];
+                            dict_db["name_place"] = str_db[21];
+                            dict_db["code_virib"] = str_db[22];
+                            dict_db["item_virib"] = str_db[23];
+                            dict_db["code_pricini"] = str_db[24];
+                            dict_db["name_pricini"] = str_db[25];
 
-                            dict_db["viavleno"] = str_db[27];
-                            dict_db["via_ditei"] = str_db[28];
-                            dict_db["zag_vnaslidok"] = str_db[29];
-                            dict_db["zag_ditei"] = str_db[30];
-                            dict_db["zag_fire"] = str_db[31];
-                            dict_db["zag_names"] = str_db[32] + "," + str_db[33] + "," + str_db[34] + "," + str_db[35] + "," + str_db[36];
-                            dict_db["zag_vik"] = str_db[37] + "," + str_db[38] + "," + str_db[39] + "," + str_db[40] + "," + str_db[41];
-                            dict_db["zag_stat_code"] = str_db[42] + "," + str_db[43] + "," + str_db[44] + "," + str_db[45] + "," + str_db[46];
+                            dict_db["viavleno"] = str_db[26];
+                            dict_db["via_ditei"] = str_db[27];
+                            dict_db["zag_vnaslidok"] = str_db[28];
+                            dict_db["zag_ditei"] = str_db[29];
+                            dict_db["zag_fire"] = str_db[30];
+                            dict_db["zag_names"] = str_db[31] + "," + str_db[32] + "," + str_db[33] + "," + str_db[34] + "," + str_db[35];
+                            dict_db["zag_vik"] = str_db[36] + "," + str_db[37] + "," + str_db[38] + "," + str_db[39] + "," + str_db[40];
+                            dict_db["zag_stat_code"] = str_db[41] + "," + str_db[42] + "," + str_db[43] + "," + str_db[44] + "," + str_db[45];//остановился здесь
                             dict_db["zag_stat_name"] = "";
-                            dict_db["code_status"] = str_db[47] + "," + str_db[48] + "," + str_db[49] + "," + str_db[50] + "," + str_db[51];
+                            dict_db["code_status"] = str_db[46] + "," + str_db[47] + "," + str_db[48] + "," + str_db[49] + "," + str_db[50];
                             dict_db["name_status"] = "";
-                            dict_db["code_moment"] = str_db[52] + "," + str_db[53] + "," + str_db[54] + "," + str_db[55] + "," + str_db[56];
+                            dict_db["code_moment"] = str_db[51] + "," + str_db[52] + "," + str_db[53] + "," + str_db[54] + "," + str_db[55];
                             dict_db["moment"] = "";
-                            dict_db["code_umovi"] = str_db[57] + "," + str_db[58] + "," + str_db[59] + "," + str_db[60] + "," + str_db[61];
+                            dict_db["code_umovi"] = str_db[56] + "," + str_db[57] + "," + str_db[58] + "," + str_db[59] + "," + str_db[60];
                             dict_db["name_umovi"] = "";
-                            dict_db["travm"] = str_db[62];
-                            dict_db["travm_ditei"] = str_db[63];
-                            dict_db["travm_fire"] = str_db[64];
-                            dict_db["pramiy"] = str_db[65];
-                            dict_db["pobichniy"] = str_db[66];
-                            dict_db["zn_bud"] = str_db[67];
-                            dict_db["posh_bud"] = str_db[68];
-                            dict_db["zn_tehnika"] = str_db[69];
-                            dict_db["posh_tehnika"] = str_db[70];
-                            dict_db["zn_zerno"] = str_db[71];
-                            dict_db["zn_koreni"] = str_db[72];
-                            dict_db["zn_valki"] = str_db[73];
-                            dict_db["zn_korm"] = str_db[74];
-                            dict_db["zn_torf"] = str_db[75];
-                            dict_db["posh_torf"] = str_db[76];
-                            dict_db["zag_tvarin"] = str_db[77];
-                            dict_db["zag_ptici"] = str_db[78];
-                            dict_db["dop_info"] = str_db[79];
+                            dict_db["travm"] = str_db[61];
+                            dict_db["travm_ditei"] = str_db[62];
+                            dict_db["travm_fire"] = str_db[63];
+                            dict_db["pramiy"] = str_db[64];
+                            dict_db["pobichniy"] = str_db[65];
+                            dict_db["zn_bud"] = str_db[66];
+                            dict_db["posh_bud"] = str_db[67];
+                            dict_db["zn_tehnika"] = str_db[68];
+                            dict_db["posh_tehnika"] = str_db[69];
+                            dict_db["zn_zerno"] = str_db[70];
+                            dict_db["zn_koreni"] = str_db[71];
+                            dict_db["zn_valki"] = str_db[72];
+                            dict_db["zn_korm"] = str_db[73];
+                            dict_db["zn_torf"] = str_db[74];
+                            dict_db["posh_torf"] = str_db[75];
+                            dict_db["zag_tvarin"] = str_db[76];
+                            dict_db["zag_ptici"] = str_db[77];
+                            dict_db["dop_info"] = str_db[78];
 
-                            dict_db["vr_ludei"] = str_db[80];
-                            dict_db["vr_ditei"] = str_db[81];
-                            dict_db["vr_tvarin"] = str_db[82];
-                            dict_db["vr_ptici"] = str_db[83];
-                            dict_db["vr_bud"] = str_db[84];
-                            dict_db["vr_tehnika"] = str_db[85];
-                            dict_db["vr_zerno"] = str_db[86];
-                            dict_db["vr_koreni"] = str_db[87];
-                            dict_db["vr_valki"] = str_db[88];
-                            dict_db["vr_korm"] = str_db[89];
-                            dict_db["vr_torf"] = str_db[90];
-                            dict_db["vr_dop"] = str_db[91];
-                            dict_db["vr_mat"] = str_db[92];
+                            dict_db["vr_ludei"] = str_db[79];
+                            dict_db["vr_ditei"] = str_db[80];
+                            dict_db["vr_tvarin"] = str_db[81];
+                            dict_db["vr_ptici"] = str_db[82];
+                            dict_db["vr_bud"] = str_db[83];
+                            dict_db["vr_tehnika"] = str_db[84];
+                            dict_db["vr_zerno"] = str_db[85];
+                            dict_db["vr_koreni"] = str_db[86];
+                            dict_db["vr_valki"] = str_db[87];
+                            dict_db["vr_korm"] = str_db[88];
+                            dict_db["vr_torf"] = str_db[89];
+                            dict_db["vr_dop"] = str_db[90];
+                            dict_db["vr_mat"] = str_db[91];
 
-                            dict_db["data_pov"] = str_db[93];
-                            dict_db["time_pov"] = str_db[94];
-                            dict_db["time_pributa"] = str_db[95];
-                            dict_db["code_fire_likvid"] = str_db[96];
+                            dict_db["data_pov"] = str_db[92];
+                            dict_db["time_pov"] = str_db[93];
+                            dict_db["time_pributa"] = str_db[94];
+                            dict_db["code_fire_likvid"] = str_db[95];
                             dict_db["name_fire_likvid"] = "";
-                            dict_db["data_lokal"] = str_db[97];
-                            dict_db["time_lokal"] = str_db[98];
-                            dict_db["data_likvid"] = str_db[99];
-                            dict_db["time_likvid"] = str_db[100];
-                            dict_db["code_umovi_posh"] = str_db[101] + "," + str_db[102] + "," + str_db[103] + "," + str_db[104] + "," + str_db[105];
+                            dict_db["data_lokal"] = str_db[96];
+                            dict_db["time_lokal"] = str_db[97];
+                            dict_db["data_likvid"] = str_db[98];
+                            dict_db["time_likvid"] = str_db[99];
+                            dict_db["code_umovi_posh"] = str_db[100] + "," + str_db[101] + "," + str_db[102] + "," + str_db[103] + "," + str_db[104];
                             dict_db["name_umovi_posh"] = "";
-                            dict_db["code_umovi_uskl"] = str_db[106] + "," + str_db[107] + "," + str_db[108] + "," + str_db[109] + "," + str_db[110];
+                            dict_db["code_umovi_uskl"] = str_db[105] + "," + str_db[106] + "," + str_db[107] + "," + str_db[108] + "," + str_db[109];
                             dict_db["name_umovi_uskl"] = "";
-                            dict_db["code_spz"] = str_db[111];
+                            dict_db["code_spz"] = str_db[110];
                             dict_db["name_spz"] = "";
-                            dict_db["code_system"] = str_db[112] + "," + str_db[113] + "," + str_db[114] + "," + str_db[115] + "," + str_db[116];
+                            dict_db["code_system"] = str_db[111] + "," + str_db[112] + "," + str_db[113] + "," + str_db[114] + "," + str_db[115];
                             dict_db["name_system"] = "";
-                            dict_db["code_dii"] = str_db[117] + "," + str_db[118] + "," + str_db[119] + "," + str_db[120] + "," + str_db[121];
+                            dict_db["code_dii"] = str_db[116] + "," + str_db[117] + "," + str_db[118] + "," + str_db[119] + "," + str_db[120];
                             dict_db["name_dii"] = "";
 
-                            dict_db["code_uch"] = str_db[122] + "," + str_db[123] + "," + str_db[124] + "," + str_db[125] + "," + str_db[126];
+                            dict_db["code_uch"] = str_db[121] + "," + str_db[122] + "," + str_db[123] + "," + str_db[124] + "," + str_db[125];
                             dict_db["name_uch"] = "";
-                            dict_db["kilk_uch"] = str_db[127] + "," + str_db[128] + "," + str_db[129] + "," + str_db[130] + "," + str_db[131];
-                            dict_db["code_fireauto"] = str_db[132] + "," + str_db[133] + "," + str_db[134] + "," + str_db[135] + "," + str_db[136];
+                            dict_db["kilk_uch"] = str_db[126] + "," + str_db[127] + "," + str_db[128] + "," + str_db[129] + "," + str_db[130];
+                            dict_db["code_fireauto"] = str_db[131] + "," + str_db[132] + "," + str_db[133] + "," + str_db[134] + "," + str_db[135];
                             dict_db["name_fireauto"] = "";
-                            dict_db["kilk_auto"] = str_db[137] + "," + str_db[138] + "," + str_db[139] + "," + str_db[140] + "," + str_db[141];
-                            dict_db["code_firestvol"] = str_db[142] + "," + str_db[143] + "," + str_db[144];
+                            dict_db["kilk_auto"] = str_db[136] + "," + str_db[137] + "," + str_db[138] + "," + str_db[139] + "," + str_db[140];
+                            dict_db["code_firestvol"] = str_db[141] + "," + str_db[142] + "," + str_db[143];
                             dict_db["name_firestvol"] = "";
-                            dict_db["kilk_firestvol"] = str_db[145] + "," + str_db[146] + "," + str_db[147];
-                            dict_db["code_rechovini"] = str_db[148] + "," + str_db[149] + "," + str_db[150];
+                            dict_db["kilk_firestvol"] = str_db[144] + "," + str_db[145] + "," + str_db[146];
+                            dict_db["code_rechovini"] = str_db[147] + "," + str_db[148] + "," + str_db[149];
                             dict_db["name_rechovini"] = "";
-                            dict_db["code_pervini"] = str_db[151] + "," + str_db[152] + "," + str_db[153];
+                            dict_db["code_pervini"] = str_db[150] + "," + str_db[151] + "," + str_db[152];
                             dict_db["name_pervini"] = "";
-                            dict_db["code_djerela"] = str_db[154] + "," + str_db[155] + "," + str_db[156];
+                            dict_db["code_djerela"] = str_db[153] + "," + str_db[154] + "," + str_db[155];
                             dict_db["name_djerela"] = "";
-                            dict_db["vikr_gds"] = str_db[157];
-                            dict_db["kilk_gds"] = str_db[158];
-                            dict_db["time_gds"] = str_db[159];
+                            dict_db["vikr_gds"] = str_db[156];
+                            dict_db["kilk_gds"] = str_db[157];
+                            dict_db["time_gds"] = str_db[158];
 
-                            dict_db["data_perevirki"] = str_db[160];
-                            dict_db["code_perevirka"] = str_db[161];
+                            dict_db["data_perevirki"] = str_db[159];
+                            dict_db["code_perevirka"] = str_db[160];
                             dict_db["name_perevirka"] = "";
-                            dict_db["code_dialnist"] = str_db[162];
+                            dict_db["code_dialnist"] = str_db[161];
                             dict_db["name_dialnist"] = "";
-                            dict_db["code_zahodi"] = str_db[163] + "," + str_db[164];
+                            dict_db["code_zahodi"] = str_db[162] + "," + str_db[163];
                             dict_db["name_zahodi"] = "";
-                            dict_db["number_kku"] = str_db[165];
-                            dict_db["data_zapovnenya"] = str_db[166];
-                            dict_db["pid_osibi"] = str_db[167];
+                            dict_db["number_kku"] = str_db[164];
+                            dict_db["data_zapovnenya"] = str_db[165];
+                            dict_db["pid_osibi"] = str_db[166];
                         }
                         string select_code = "SELECT `number_cartka` FROM kartka_obliku WHERE code_raion=" + dict_db["code_raion"] + " AND number_cartka=" + dict_db["number_cartka"] + " AND main_dop=" + dict_db["main_dop"];
                         cmd_db = new SQLiteCommand(select_code, con_db);
@@ -10210,7 +10810,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     }
                     if (code > 9)
                     {
-                        MessageBox.Show("В це поле можно внести тільки коди від 0 до 9", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Це поле може містити коди від 0 до 9", "Помилка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         textBox3.Select();
                         textBox3.ScrollToCaret();
                     }
@@ -10302,20 +10902,25 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             //Console.WriteLine(dateTimePicker3.Value.ToShortTimeString());
             if (dateTimePicker3.Value.ToShortTimeString() != "0:00")
             {
-                maskedTextBox7.Text = dateTimePicker3.Value.ToShortTimeString();
+                if (dateTimePicker3.Value.Hour > 0 && dateTimePicker3.Value.Hour < 9)
+                {
+                    maskedTextBox7.Text = "0"+dateTimePicker3.Value.ToShortTimeString();
+                }  
             }
             else
             {
                 maskedTextBox7.Text = "";
             }
-           
         }
 
         private void dateTimePicker4_ValueChanged(object sender, EventArgs e)
         {
             if (dateTimePicker4.Value.ToShortTimeString() != "0:00")
             {
-                maskedTextBox8.Text = dateTimePicker4.Value.ToShortTimeString();
+                if (dateTimePicker4.Value.Hour > 0 && dateTimePicker4.Value.Hour < 9)
+                {
+                    maskedTextBox8.Text = "0"+dateTimePicker4.Value.ToShortTimeString();
+                }     
             }
             else
             {
@@ -10328,7 +10933,11 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
         {
             if (dateTimePicker5.Value.ToShortTimeString() != "0:00")
             {
-                maskedTextBox9.Text = dateTimePicker5.Value.ToShortTimeString();
+                if (dateTimePicker5.Value.Hour > 0 && dateTimePicker5.Value.Hour < 9)
+                {
+                    maskedTextBox9.Text ="0"+dateTimePicker5.Value.ToShortTimeString();
+                }
+                    
             }
             else
             {
@@ -10341,7 +10950,11 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
         {
             if (dateTimePicker7.Value.ToShortTimeString() != "0:00")
             {
-                maskedTextBox10.Text = dateTimePicker7.Value.ToShortTimeString();
+                if(dateTimePicker7.Value.Hour>0 && dateTimePicker7.Value.Hour < 9)
+                {
+                    maskedTextBox10.Text = "0"+dateTimePicker7.Value.ToShortTimeString();
+                }
+               
             }
             else
             {
@@ -10372,10 +10985,11 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
 
         private void button18_Click(object sender, EventArgs e)
         {
+            flag_form = true;
             listBox3.Items.Clear();
             radioButton1.Checked = false;
             radioButton2.Checked = false;
-            string zapros = "SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku";
+            string zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku";
 
    
             if (maskedTextBox11.Text != "  .  .")
@@ -10390,7 +11004,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 textBox164.Text = "";
                 textBox166.Text = "";
 
-                zapros = "SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku WHERE date_viniknenya='" + maskedTextBox11.Text+"'";
+                zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku WHERE date_viniknenya='" + maskedTextBox11.Text+"'";
                 cmd_db = new SQLiteCommand(zapros, con_db);
                 rdr = cmd_db.ExecuteReader();
 
@@ -10398,15 +11012,16 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 while (rdr.Read())
                 {
                     // region_items.Add(rdr[1].ToString());
-                    if(button17.Text!= "Видалити картку")
-                    {
-                        listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
-                    else
-                    {
-                        listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
-                    
+                    //  if(button17.Text!= "Видалити картку")
+                    //    {
+                    //       listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                    //    }
+                    //   else
+                    //   {
+                    //  listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
+                    //  }
+
                 }
             }
             if (maskedTextBox12.Text != "  .  ." && maskedTextBox13.Text != "  .  .")
@@ -10427,14 +11042,15 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                     // region_items.Add(rdr[1].ToString());
                     if(DateTime.Parse(rdr[2].ToString())>=DateTime.Parse(maskedTextBox12.Text) && DateTime.Parse(rdr[2].ToString()) <= DateTime.Parse(maskedTextBox13.Text))
                     {
-                        if (button17.Text != "Видалити картку")
-                        {
-                            listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                        }
-                        else
-                        {
-                            listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                        }
+                        // if (button17.Text != "Видалити картку")
+                        //   {
+                        //       listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                        //   }
+                        //   else
+                        //   {
+                        //    listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                        listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
+                        // }
                     }
                     
                 }
@@ -10451,7 +11067,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 textBox164.Text = "";
                 textBox166.Text = "";
 
-                zapros = "SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku WHERE number_cartka='" + textBox160.Text + "'";
+                zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku WHERE number_cartka='" + textBox160.Text + "'";
                 cmd_db = new SQLiteCommand(zapros, con_db);
                 rdr = cmd_db.ExecuteReader();
 
@@ -10459,14 +11075,15 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 while (rdr.Read())
                 {
                     // region_items.Add(rdr[1].ToString());
-                    if (button17.Text != "Видалити картку")
-                    {
-                        listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
-                    else
-                    {
-                        listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
+                    /* if (button17.Text != "Видалити картку")
+                     {
+                         listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                     }
+                     else
+                     {
+                         listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                     }*/
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
                 }
             }
             if(textBox161.Text!="" && textBox162.Text != "")
@@ -10480,7 +11097,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 textBox164.Text = "";
                 textBox166.Text = "";
 
-                zapros = "SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku WHERE number_cartka >='" + textBox161.Text + "' AND number_cartka <='" + textBox162.Text +"'";
+                zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku WHERE number_cartka >='" + textBox161.Text + "' AND number_cartka <='" + textBox162.Text +"'";
                 cmd_db = new SQLiteCommand(zapros, con_db);
                 rdr = cmd_db.ExecuteReader();
 
@@ -10488,14 +11105,15 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 while (rdr.Read())
                 {
                     // region_items.Add(rdr[1].ToString());
-                    if (button17.Text != "Видалити картку")
-                    {
-                        listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
-                    else
-                    {
-                        listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
+                    /*  if (button17.Text != "Видалити картку")
+                      {
+                          listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }
+                      else
+                      {
+                          listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }*/
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
                 }
             }
             if (textBox165.Text != "")
@@ -10510,7 +11128,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 textBox164.Text = "";
                 textBox166.Text = "";
 
-                zapros = "SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku WHERE main_dop='" + textBox165.Text + "'";
+                zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku WHERE main_dop='" + textBox165.Text + "'";
                 cmd_db = new SQLiteCommand(zapros, con_db);
                 rdr = cmd_db.ExecuteReader();
 
@@ -10518,14 +11136,15 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 while (rdr.Read())
                 {
                     // region_items.Add(rdr[1].ToString());
-                    if (button17.Text != "Видалити картку")
-                    {
-                        listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
-                    else
-                    {
-                        listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
+                    /*  if (button17.Text != "Видалити картку")
+                      {
+                          listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }
+                      else
+                      {
+                          listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }*/
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
                 }
             }
             if (textBox164.Text != "" && textBox163.Text != "")
@@ -10539,7 +11158,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 textBox165.Text = "";
                 textBox166.Text = "";
 
-                zapros = "SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku WHERE main_dop >='" + textBox164.Text + "' AND main_dop <='" + textBox163.Text +"'";
+                zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku WHERE main_dop >='" + textBox164.Text + "' AND main_dop <='" + textBox163.Text +"'";
                 cmd_db = new SQLiteCommand(zapros, con_db);
                 rdr = cmd_db.ExecuteReader();
 
@@ -10547,14 +11166,15 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 while (rdr.Read())
                 {
                     // region_items.Add(rdr[1].ToString());
-                    if (button17.Text != "Видалити картку")
-                    {
-                        listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
-                    else
-                    {
-                        listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
+                    /* if (button17.Text != "Видалити картку")
+                     {
+                         listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                     }
+                     else
+                     {
+                         listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                     }*/
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
                 }
             }
             if (textBox166.Text != "")
@@ -10569,7 +11189,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 textBox163.Text = "";
                 textBox164.Text = "";
 
-                zapros = "SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku WHERE code_raion ='" + textBox166.Text + "'";
+                zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku WHERE code_raion ='" + textBox166.Text + "'";
                 cmd_db = new SQLiteCommand(zapros, con_db);
                 rdr = cmd_db.ExecuteReader();
 
@@ -10577,14 +11197,15 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 while (rdr.Read())
                 {
                     // region_items.Add(rdr[1].ToString());
-                    if (button17.Text != "Видалити картку")
-                    {
-                        listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
-                    else
-                    {
-                        listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
+                    /*  if (button17.Text != "Видалити картку")
+                      {
+                          listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }
+                      else
+                      {
+                          listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }*/
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
                 }
             }
 
@@ -10598,7 +11219,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 radioButton1.Checked = false;
                 radioButton2.Checked = false;
 
-                zapros = "SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku";
+                zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku";
                 cmd_db = new SQLiteCommand(zapros, con_db);
                    rdr = cmd_db.ExecuteReader();
 
@@ -10606,14 +11227,15 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                    while (rdr.Read())
                    {
                     // region_items.Add(rdr[1].ToString());
-                    if (button17.Text != "Видалити картку")
-                    {
-                        listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
-                    else
-                    {
-                        listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
+                    /*  if (button17.Text != "Видалити картку")
+                      {
+                          listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }
+                      else
+                      {
+                          listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }*/
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
                 }
             }
 
@@ -10625,7 +11247,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             listBox3.Items.Clear();
             if (radioButton1.Checked)
             {
-              string  zapros = "SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku WHERE code_raion ='" + textBox166.Text + "' AND main_dop=0";
+              string  zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku WHERE code_raion ='" + textBox166.Text + "' AND main_dop=0";
 
                 cmd_db = new SQLiteCommand(zapros, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -10634,15 +11256,17 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 while (rdr.Read())
                 {
                     // region_items.Add(rdr[1].ToString());
-                    if (button17.Text != "Видалити картку")
-                    {
-                        listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
-                    else
-                    {
-                        listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
+                    /* if (button17.Text != "Видалити картку")
+                     {
+                         listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                     }
+                     else
+                     {
+                         listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                     }*/
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
                 }
+                flag_form = true;
             }
             label108.Text = listBox3.Items.Count.ToString();
         }
@@ -10652,7 +11276,7 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             listBox3.Items.Clear();
             if (radioButton2.Checked)
             {
-                string zapros = "SELECT `number_cartka`,`main_dop`,`date_viniknenya`,`id_kartki` from kartka_obliku WHERE code_raion ='" + textBox166.Text + "' AND main_dop!=0";
+                string zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku WHERE code_raion ='" + textBox166.Text + "' AND main_dop!=0";
 
                 cmd_db = new SQLiteCommand(zapros, con_db);
                 rdr = cmd_db.ExecuteReader();
@@ -10661,15 +11285,17 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
                 while (rdr.Read())
                 {
                     // region_items.Add(rdr[1].ToString());
-                    if (button17.Text != "Видалити картку")
-                    {
-                        listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
-                    else
-                    {
-                        listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
-                    }
+                    /*  if (button17.Text != "Видалити картку")
+                      {
+                          listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }
+                      else
+                      {
+                          listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }*/
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
                 }
+                flag_form = true;
             }
             label108.Text = listBox3.Items.Count.ToString();
         }
@@ -10697,6 +11323,568 @@ public string CodeAllContent(string tableitem, string namefield, string code,  o
             textBox166.Text = "";
             radioButton1.Checked = false;
             radioButton2.Checked = false;
+            radioButton3.Checked = false;
+            radioButton4.Checked = false;
+            flag_form = false;
+        }
+
+        private void textBox1_Leave(object sender, EventArgs e)
+        {
+            string code = CodeAllContent("current_raion", "code_raion", "code_raion", textBox1.Text);
+            if (code == "")
+            textBox1.Text = "";
+        }
+
+        private void textBox120_Leave(object sender, EventArgs e)
+        {
+            if (textBox120.Text != "")
+            {
+                if (int.Parse(textBox120.Text) > 11)
+                {
+                    textBox120.Text = "";
+                    MessageBox.Show("Це поле може містити коди від 9 до 11");
+                    textBox120.Select();
+                    textBox120.ScrollToCaret();
+                }
+                else if (int.Parse(textBox120.Text) < 9)
+                {
+                    textBox120.Text = "";
+                    MessageBox.Show("Це поле може містити коди від 9 до 11");
+                    textBox120.Select();
+                    textBox120.ScrollToCaret();
+                }
+
+            }
+        }
+
+        private void textBox119_Leave(object sender, EventArgs e)
+        {
+            if (textBox119.Text != "")
+            {
+                if (int.Parse(textBox119.Text) > 13)
+                {
+                    textBox119.Text = "";
+                    MessageBox.Show("Це поле може містити коди 12 або 13");
+                    textBox119.Select();
+                    textBox119.ScrollToCaret();
+                }
+                else if (int.Parse(textBox119.Text) < 12)
+                {
+                    textBox119.Text = "";
+                    MessageBox.Show("Це поле може містити коди 12 або 13");
+                    textBox119.Select();
+                    textBox119.ScrollToCaret();
+                }
+
+            }
+        }
+
+        private void textBox103_Leave(object sender, EventArgs e)
+        {
+            if (textBox103.Text != "")
+            {
+                if (textBox103.Text == textBox104.Text || textBox103.Text == textBox105.Text || textBox103.Text == textBox106.Text || textBox103.Text == textBox107.Text)
+                {
+                    textBox103.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox103.Select();
+                    textBox103.ScrollToCaret();
+                }
+            }
+               
+        }
+
+        private void textBox104_Leave(object sender, EventArgs e)
+        {
+            if (textBox104.Text != "")
+            {
+                if (textBox104.Text == textBox103.Text || textBox104.Text == textBox105.Text || textBox104.Text == textBox106.Text || textBox104.Text == textBox107.Text)
+                {
+                    textBox104.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox104.Select();
+                    textBox104.ScrollToCaret();
+                }
+            }  
+        }
+
+        private void textBox105_Leave(object sender, EventArgs e)
+        {
+            if (textBox105.Text != "")
+            {
+                if (textBox105.Text == textBox103.Text || textBox105.Text == textBox104.Text || textBox105.Text == textBox106.Text || textBox105.Text == textBox107.Text)
+                {
+                    textBox105.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox105.Select();
+                    textBox105.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox106_Leave(object sender, EventArgs e)
+        {
+            if (textBox106.Text != "")
+            {
+                if (textBox106.Text == textBox103.Text || textBox106.Text == textBox105.Text || textBox106.Text == textBox104.Text || textBox106.Text == textBox107.Text)
+                {
+                    textBox106.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox106.Select();
+                    textBox106.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox107_Leave(object sender, EventArgs e)
+        {
+            if (textBox107.Text != "")
+            {
+                if (textBox107.Text == textBox103.Text || textBox107.Text == textBox104.Text || textBox107.Text == textBox105.Text || textBox107.Text == textBox106.Text)
+                {
+                    textBox107.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox107.Select();
+                    textBox107.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox112_Leave(object sender, EventArgs e)
+        {
+            if (textBox112.Text != "")
+            {
+                if (textBox112.Text == textBox108.Text || textBox112.Text == textBox109.Text || textBox112.Text == textBox110.Text || textBox112.Text == textBox111.Text)
+                {
+                    textBox112.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox112.Select();
+                    textBox112.ScrollToCaret();
+                }
+            }
+            
+        }
+
+        private void textBox111_Leave(object sender, EventArgs e)
+        {
+            if (textBox111.Text != "")
+            {
+                if (textBox111.Text == textBox108.Text || textBox111.Text == textBox109.Text || textBox111.Text == textBox110.Text || textBox111.Text == textBox112.Text)
+                {
+                    textBox111.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox111.Select();
+                    textBox111.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox110_Leave(object sender, EventArgs e)
+        {
+            if (textBox110.Text != "")
+            {
+                if (textBox110.Text == textBox108.Text || textBox110.Text == textBox109.Text || textBox110.Text == textBox111.Text || textBox110.Text == textBox112.Text)
+                {
+                    textBox110.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox110.Select();
+                    textBox110.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox109_Leave(object sender, EventArgs e)
+        {
+            if (textBox109.Text != "")
+            {
+                if (textBox109.Text == textBox108.Text || textBox109.Text == textBox110.Text || textBox109.Text == textBox111.Text || textBox109.Text == textBox112.Text)
+                {
+                    textBox109.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox109.Select();
+                    textBox109.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox108_Leave(object sender, EventArgs e)
+        {
+            if (textBox108.Text != "")
+            {
+                if (textBox108.Text == textBox109.Text || textBox108.Text == textBox110.Text || textBox108.Text == textBox111.Text || textBox108.Text == textBox112.Text)
+                {
+                    textBox108.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox108.Select();
+                    textBox108.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox129_Leave(object sender, EventArgs e)
+        {
+            if (textBox129.Text != "")
+            {
+                if (textBox129.Text == textBox130.Text || textBox129.Text == textBox131.Text || textBox129.Text == textBox132.Text || textBox129.Text == textBox133.Text)
+                {
+                    textBox129.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox129.Select();
+                    textBox129.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox130_Leave(object sender, EventArgs e)
+        {
+            if (textBox130.Text != "")
+            {
+                if (textBox130.Text == textBox129.Text || textBox130.Text == textBox131.Text || textBox130.Text == textBox132.Text || textBox130.Text == textBox133.Text)
+                {
+                    textBox130.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox130.Select();
+                    textBox130.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox131_Leave(object sender, EventArgs e)
+        {
+            if (textBox131.Text != "")
+            {
+                if (textBox131.Text == textBox129.Text || textBox131.Text == textBox130.Text || textBox131.Text == textBox132.Text || textBox131.Text == textBox133.Text)
+                {
+                    textBox131.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox131.Select();
+                    textBox131.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox132_Leave(object sender, EventArgs e)
+        {
+            if (textBox132.Text != "")
+            {
+                if (textBox132.Text == textBox129.Text || textBox132.Text == textBox130.Text || textBox132.Text == textBox131.Text || textBox132.Text == textBox133.Text)
+                {
+                    textBox132.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox132.Select();
+                    textBox132.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox133_Leave(object sender, EventArgs e)
+        {
+            if (textBox133.Text != "")
+            {
+                if (textBox133.Text == textBox129.Text || textBox133.Text == textBox131.Text || textBox133.Text == textBox132.Text || textBox133.Text == textBox130.Text)
+                {
+                    textBox133.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox133.Select();
+                    textBox133.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox134_Leave(object sender, EventArgs e)
+        {
+            if (textBox134.Text != "")
+            {
+                if (textBox134.Text == textBox135.Text || textBox134.Text == textBox136.Text)
+                {
+                    textBox134.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox134.Select();
+                    textBox134.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox135_Leave(object sender, EventArgs e)
+        {
+            if (textBox135.Text != "")
+            {
+                if (textBox135.Text == textBox134.Text || textBox135.Text == textBox136.Text)
+                {
+                    textBox135.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox135.Select();
+                    textBox135.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox136_Leave(object sender, EventArgs e)
+        {
+            if (textBox136.Text != "")
+            {
+                if (textBox136.Text == textBox135.Text || textBox136.Text == textBox134.Text)
+                {
+                    textBox136.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox136.Select();
+                    textBox136.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox137_Leave(object sender, EventArgs e)
+        {
+            if (textBox137.Text != "")
+            {
+                if (textBox137.Text == textBox138.Text || textBox137.Text == textBox139.Text)
+                {
+                    textBox137.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox137.Select();
+                    textBox137.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox138_Leave(object sender, EventArgs e)
+        {
+            if (textBox138.Text != "")
+            {
+                if (textBox138.Text == textBox137.Text || textBox138.Text == textBox139.Text)
+                {
+                    textBox138.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox138.Select();
+                    textBox138.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox139_Leave(object sender, EventArgs e)
+        {
+            if (textBox139.Text != "")
+            {
+                if (textBox139.Text == textBox138.Text || textBox139.Text == textBox137.Text)
+                {
+                    textBox139.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox139.Select();
+                    textBox139.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox140_Leave(object sender, EventArgs e)
+        {
+            if (textBox140.Text != "")
+            {
+                if (textBox140.Text == textBox141.Text || textBox140.Text == textBox142.Text)
+                {
+                    textBox140.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox140.Select();
+                    textBox140.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox141_Leave(object sender, EventArgs e)
+        {
+            if (textBox141.Text != "")
+            {
+                if (textBox141.Text == textBox140.Text || textBox141.Text == textBox142.Text)
+                {
+                    textBox141.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox141.Select();
+                    textBox141.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox142_Leave(object sender, EventArgs e)
+        {
+            if (textBox142.Text != "")
+            {
+                if (textBox142.Text == textBox141.Text || textBox142.Text == textBox140.Text)
+                {
+                    textBox142.Text = "";
+                    MessageBox.Show("Коди не мають повторюватись!");
+                    textBox142.Select();
+                    textBox142.ScrollToCaret();
+                }
+            }
+        }
+
+        private void textBox15_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                float res = float.Parse(textBox15.Text);
+                textBox15.Text = String.Format("{0:0.000}", res);
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void panel5_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void button23_Click(object sender, EventArgs e)
+        {
+                try
+                {
+                    if (listBox3.SelectedIndex != -1)
+                    {
+                        string res = listBox3.SelectedItem.ToString();
+                        string[] rep;
+                        string[] rep1;
+                        rep = res.Split(':');
+                        rep = rep[1].Split(',');
+                    
+                    DialogResult res_del = MessageBox.Show("Ви впевнені що хочете видалити цю картку", "Увага!", MessageBoxButtons.YesNo);
+                        if (res_del == DialogResult.Yes)
+                        {
+                            cmd_db = new SQLiteCommand("DELETE from kartka_obliku WHERE `id_kartki`=" + rep[0], con_db);
+                            rdr = cmd_db.ExecuteReader();
+                            MessageBox.Show("Картка видалена з бази даних");
+                            cmd_db = new SQLiteCommand("SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku", con_db);
+                            rdr = cmd_db.ExecuteReader();
+                            listBox3.Items.Clear();
+
+                            while (rdr.Read())
+                            {
+                            // region_items.Add(rdr[1].ToString());
+                            //listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                            listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
+                        }
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        DialogResult res_del = MessageBox.Show("Ви впевнені що хочете видалити всі картки", "Увага!", MessageBoxButtons.YesNo);
+                        if (res_del == DialogResult.Yes)
+                        {
+                            cmd_db = new SQLiteCommand("DELETE from kartka_obliku", con_db);
+                            rdr = cmd_db.ExecuteReader();
+                            MessageBox.Show("Всі картки видалені з бази даних");
+                            listBox3.Items.Clear();
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    Console.WriteLine(ex.Message);
+                }
+                label108.Text = listBox3.Items.Count.ToString();
+
+            
+        }
+
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            listBox3.Items.Clear();
+            if (radioButton4.Checked)
+            {
+                string zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku WHERE main_dop=0";
+
+                cmd_db = new SQLiteCommand(zapros, con_db);
+                rdr = cmd_db.ExecuteReader();
+
+
+                while (rdr.Read())
+                {
+                    // region_items.Add(rdr[1].ToString());
+                    /* if (button17.Text != "Видалити картку")
+                     {
+                         listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                     }
+                     else
+                     {
+                         listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                     }*/
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
+                }
+                flag_form = true;
+            }
+            label108.Text = listBox3.Items.Count.ToString();
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            listBox3.Items.Clear();
+            if (radioButton3.Checked)
+            {
+                string zapros = "SELECT `id_kartki`,`number_cartka`,`main_dop`,`date_viniknenya`,`code_raion`,`name_raion`,`name_adress`,`fire_item` from kartka_obliku WHERE main_dop!=0";
+
+                cmd_db = new SQLiteCommand(zapros, con_db);
+                rdr = cmd_db.ExecuteReader();
+
+
+                while (rdr.Read())
+                {
+                    // region_items.Add(rdr[1].ToString());
+                    /*  if (button17.Text != "Видалити картку")
+                      {
+                          listBox3.Items.Add("номер картки " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }
+                      else
+                      {
+                          listBox3.Items.Add("номер картки " + "(" + rdr[3].ToString() + " ) " + rdr[0].ToString() + "," + rdr[1].ToString() + " дата виникнення " + "(" + rdr[2].ToString() + ")");
+                      }*/
+                    listBox3.Items.Add("№ п/п:" + rdr[0].ToString() + ",код району:" + rdr[4].ToString() + "," + "назва району:" + rdr[5].ToString() + "," + "номер картки:" + rdr[1].ToString() + "," + rdr[2].ToString() + "," + "адреса:" + rdr[6].ToString() + "," + "об'єкт пожежі:" + rdr[7].ToString() + "," + "дата виникнення:" + "(" + rdr[3].ToString() + ")");
+                }
+                flag_form = true;
+            }
+            label108.Text = listBox3.Items.Count.ToString();
+        }
+
+        private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            try
+            {
+                string[] str = comboBox1.SelectedItem.ToString().Split(';');
+                textBox166.Text = str[0];//CodeAllContent("current_raion", "name_raion", "code_raion", comboBox83.SelectedItem);
+               
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void textBox48_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                if (textBox48.Text != "")
+                {
+                    float res = float.Parse(textBox48.Text);
+                    textBox48.Text = String.Format("{0:0.000}", res);
+                }
+              
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
